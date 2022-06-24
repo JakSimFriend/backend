@@ -54,6 +54,18 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
 
 
+    //Social Login
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    implementation 'org.json:json:20171018'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.jsoup:jsoup:1.14.3'
+
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '3.10'
+    implementation group: 'com.github.scribejava', name:'scribejava-core', version:'2.8.1'
+    compile files("libs/tibero6-jdbc-14.jar")
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 
 
 
