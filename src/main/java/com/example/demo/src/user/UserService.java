@@ -143,6 +143,13 @@ public class UserService {
         }
     }
 
+    public void userCheck(PostUserNickName postUserNickName) throws  BaseException{
+        String nickName = postUserNickName.getNickName();
+        if(userDao.checkNickName(nickName) == 0){
+            throw new BaseException(NOT_EXIST_USER);
+        }
+    }
+
 }
 
 

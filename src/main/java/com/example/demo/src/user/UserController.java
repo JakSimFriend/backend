@@ -89,4 +89,34 @@ public class UserController {
         }
     }
 
+    /**
+     * 사용자 검색 API
+     * [POST] /users/check
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PostMapping("/check")
+    public BaseResponse<String> userCheck(@RequestBody PostUserNickName postUserNickName) {
+        try {
+            if(postUserNickName.getNickName() == null){
+                return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+            }
+            if(postUserNickName.getNickName().length() < 1 || postUserNickName.getNickName().length() > 8){
+                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+            }
+
+            int userIdx = postUserNickName.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            userService.userCheck(postUserNickName);
+            String result = "존재하는 유저입니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
