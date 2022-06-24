@@ -139,7 +139,7 @@ public class UserService {
     public void checkNickName(PostUserNickName postUserNickName) throws BaseException{
         String nickName = postUserNickName.getNickName();
         if(userDao.checkNickName(nickName) == 1){
-            throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+            throw new BaseException(DUPLICATED_NICKNAME);
         }
     }
 
