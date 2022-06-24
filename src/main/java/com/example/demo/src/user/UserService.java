@@ -3,7 +3,7 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
-import com.example.demo.utils.SHA256;
+import javafx.geometry.Pos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +135,14 @@ public class UserService {
             return new PostLoginRes(userIdx, jwt);
         }
     }
+
+    public void checkNickName(PostUserNickName postUserNickName) throws BaseException{
+        String nickName = postUserNickName.getNickName();
+        if(userDao.checkNickName(nickName) == 1){
+            throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+        }
+    }
+
 }
 
 

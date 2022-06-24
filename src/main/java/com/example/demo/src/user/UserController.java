@@ -59,4 +59,34 @@ public class UserController {
 
     }
 
+    /**
+     * 닉네임 중복 확인 API
+     * [POST] /users/nickname/check
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PostMapping("/nickname/check")
+    public BaseResponse<String> checkNickName(@RequestBody PostUserNickName postUserNickName) {
+        try {
+            if(postUserNickName.getNickName() == null){
+                return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+            }
+            if(postUserNickName.getNickName().length() < 1 || postUserNickName.getNickName().length() > 8){
+                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+            }
+
+            int userIdx = postUserNickName.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            userService.checkNickName(postUserNickName);
+            String result = "중복확인 완료되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
