@@ -72,7 +72,7 @@ public enum BaseResponseStatus {
     POST_FAIL_NICKNAME(false, 3017, "닉네임 설정에 실패하였습니다."),
     POST_FAIL_RECOMMENDER(false, 3018, "추천인 등록에 실패하였습니다."),
     POST_FAIL_CHALLENGE(false, 3019, "챌린지 개설에 실패하였습니다."),
-    POST_FAIL_PROMISE(false, 3020, "작심 다짐하기 설정해 실패하였습니다."),
+    POST_FAIL_PROMISE(false, 3020, "작심 다짐하기 설정에 실패하였습니다."),
 
     /**
      * 4000 : Database, Server 오류
