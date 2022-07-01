@@ -42,16 +42,20 @@ public enum BaseResponseStatus {
     POST_CHALLENGES_INVALID_CONTENT(false, 2103, "챌린지 내용 형식을 확인해주세요."),
     POST_CHALLENGES_EMPTY_START(false, 2104, "챌린지 시작 날짜를 입력해주세요."),
     POST_CHALLENGES_INVALID_START(false, 2105, "챌린지 시작 날짜 형식을 확인해주세요."),
-    POST_CHALLENGES_EMPTY_CYCLE(false, 2108, "챌린지 인증 주기를 입력해주세요."),
-    POST_CHALLENGES_INVALID_CYCLE(false, 2109, "챌린지 인증 주기 형식을 확인해주세요."),
-    POST_CHALLENGES_EMPTY_COUNT(false, 2110, "챌린지 인증 횟수를 입력해주세요."),
-    POST_CHALLENGES_INVALID_COUNT(false, 2111, "챌린지 인증 횟수 형식을 확인해주세요."),
-    POST_CHALLENGES_EMPTY_DEADLINE(false, 2112, "챌린지 인증 시간을 입력해주세요."),
-    POST_CHALLENGES_INVALID_DEADLINE(false, 2113, "챌린지 인증 시간 형식을 확인해주세요."),
-    POST_CHALLENGES_EMPTY_CATEGORY(false, 2114, "챌린지 카테고리를 입력해주세요."),
-    POST_CHALLENGES_INVALID_CATEGORY(false, 2115, "챌린지 카테고리 형식을 확인해주세요."),
-    POST_CHALLENGES_EMPTY_USER(false, 2116, "사용자를 입력해주세요."),
-    POST_CHALLENGES_INVALID_TAG(false, 2117, "태크 형식을 확인해주세요."),
+    POST_CHALLENGES_EMPTY_CYCLE(false, 2106, "챌린지 인증 주기를 입력해주세요."),
+    POST_CHALLENGES_INVALID_CYCLE(false, 2107, "챌린지 인증 주기 형식을 확인해주세요."),
+    POST_CHALLENGES_EMPTY_COUNT(false, 2108, "챌린지 인증 횟수를 입력해주세요."),
+    POST_CHALLENGES_INVALID_COUNT(false, 2109, "챌린지 인증 횟수 형식을 확인해주세요."),
+    POST_CHALLENGES_EMPTY_DEADLINE(false, 2110, "챌린지 인증 시간을 입력해주세요."),
+    POST_CHALLENGES_INVALID_DEADLINE(false, 2111, "챌린지 인증 시간 형식을 확인해주세요."),
+    POST_CHALLENGES_EMPTY_CATEGORY(false, 2112, "챌린지 카테고리를 입력해주세요."),
+    POST_CHALLENGES_INVALID_CATEGORY(false, 2113, "챌린지 카테고리 형식을 확인해주세요."),
+    POST_CHALLENGES_EMPTY_USER(false, 2114, "사용자를 입력해주세요."),
+    POST_CHALLENGES_INVALID_TAG(false, 2115, "태그 형식을 확인해주세요."),
+
+    // [POST] /profiles
+    POST_PROFILES_EMPTY_PROMISE(false, 2200, "작심 다짐하기를 입력해주세요."),
+    POST_PROFILES_INVALID_PROMISE(false, 2201, "작심 다짐하기 형식을 확인해주세요."),
 
 
     /**
@@ -68,7 +72,7 @@ public enum BaseResponseStatus {
     POST_FAIL_NICKNAME(false, 3017, "닉네임 설정에 실패하였습니다."),
     POST_FAIL_RECOMMENDER(false, 3018, "추천인 등록에 실패하였습니다."),
     POST_FAIL_CHALLENGE(false, 3019, "챌린지 개설에 실패하였습니다."),
-
+    POST_FAIL_PROMISE(false, 3020, "작심 다짐하기 설정해 실패하였습니다."),
 
     /**
      * 4000 : Database, Server 오류
