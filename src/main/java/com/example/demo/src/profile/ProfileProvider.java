@@ -29,4 +29,13 @@ public class ProfileProvider {
         this.profileDao = profileDao;
         this.jwtService = jwtService;
     }
+
+    public GetProfileEdit getProfileEdit(int userIdx) throws BaseException {
+        try {
+            GetProfileEdit getProfileEdit = profileDao.getProfileEdit(userIdx);
+            return getProfileEdit;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

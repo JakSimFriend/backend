@@ -24,4 +24,19 @@ public class ProfileDao {
 
         return this.jdbcTemplate.update(modifyPromiseQuery, modifyPromiseParams);
     }
+
+    public GetProfileEdit getProfileEdit(int userIdx) {
+        String getProfileEditQuery = "select userIdx, profile, promise from User where userIdx = ? ";
+        int getProfileEditParams = userIdx;
+
+        return this.jdbcTemplate.queryForObject(getProfileEditQuery,
+                (rs, rowNum) -> new GetProfileEdit(
+                        rs.getInt("userIdx"),
+                        rs.getString("profile"),
+                        rs.getString("promise")
+                ),
+                getProfileEditParams
+        );
+
+    }
 }

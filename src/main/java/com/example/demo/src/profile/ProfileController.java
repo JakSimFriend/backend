@@ -68,4 +68,28 @@ public class ProfileController {
         }
     }
 
+    /**
+     * 프로필 수정 화면 조회 API
+     * [GET] /profiles/:idx/edit
+     *
+     * @return BaseResponse<GetProfileEdit>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{idx}/edit")
+    public BaseResponse<GetProfileEdit> getProfileEdit(@PathVariable("idx") int userIdx) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            GetProfileEdit getProfileEdit = profileProvider.getProfileEdit(userIdx);
+            return new BaseResponse<>(getProfileEdit);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
 }
