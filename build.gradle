@@ -67,6 +67,7 @@ dependencies {
     compile files("libs/tibero6-jdbc-14.jar")
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 
 }
