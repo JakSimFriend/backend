@@ -136,17 +136,44 @@ public class UserService {
         }
     }
 
-    public void checkNickName(PostUserNickName postUserNickName) throws BaseException{
+    public void checkNickName(PostUserNickName postUserNickName) throws BaseException {
         String nickName = postUserNickName.getNickName();
-        if(userDao.checkNickName(nickName) == 1){
+        if (userDao.checkNickName(nickName) == 1) {
             throw new BaseException(DUPLICATED_NICKNAME);
         }
     }
 
-    public void userCheck(PostUserNickName postUserNickName) throws  BaseException{
-        String nickName = postUserNickName.getNickName();
-        if(userDao.checkNickName(nickName) == 0){
+    public void userCheck(PostUserNickName postUserNickName) throws BaseException {
+        try {
+            String nickName = postUserNickName.getNickName();
+            if (userDao.getUserIdx(nickName) == 0) {
+                throw new BaseException(NOT_EXIST_USER);
+            }
+
+        } catch (Exception exception) {
             throw new BaseException(NOT_EXIST_USER);
+        }
+    }
+
+    public void createNickName(PostUserInfo postUserInfo) throws BaseException {
+        try {
+            int result = userDao.createNickName(postUserInfo);
+            if (result == 0) {
+                throw new BaseException(POST_FAIL_NICKNAME);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void createRecommender(PostUserInfo postUserInfo) throws BaseException {
+        try {
+            int result = userDao.createRecommender(postUserInfo);
+            if (result == 0) {
+                throw new BaseException(POST_FAIL_RECOMMENDER);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
         }
     }
 

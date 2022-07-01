@@ -33,6 +33,7 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_NICKNAME(false, 2018, "중복된 닉네임입니다."),
     POST_USERS_EMPTY_NICKNAME(false, 2019, "닉네임을 입력해주세요."),
     POST_USERS_INVALID_NICKNAME(false, 2020, "닉네임 형식을 확인해주세요."),
+    POST_USERS_INVALID_RECOMMENDER(false, 2021, "추천인을 확인해주세요."),
 
 
 
@@ -47,6 +48,8 @@ public enum BaseResponseStatus {
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
     DUPLICATED_NICKNAME(false, 3015, "중복된 닉네임입니다."),
     NOT_EXIST_USER(false, 3016, "존재하지 않는 유저입니다."),
+    POST_FAIL_NICKNAME(false, 3017, "닉네임 설정에 실패하였습니다."),
+    POST_FAIL_RECOMMENDER(false, 3018, "추천인 등록에 실패하였습니다."),
 
 
     /**

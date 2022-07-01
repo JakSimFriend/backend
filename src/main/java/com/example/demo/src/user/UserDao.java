@@ -125,4 +125,36 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, checkNickNameParams);
     }
 
+    public int getUserIdx(String nickName){
+        String getUserIdxQuery = "select userIdx from User where nickName = ?";
+        String getUserIdxParams = nickName;
+        return this.jdbcTemplate.queryForObject(getUserIdxQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("userIdx")), getUserIdxParams);
+    }
+
+    public int createNickName(PostUserInfo postUserInfo){
+        String postUserInfoQuery = "update User set nickName = ? where userIdx = ?;";
+        Object[] postUserInfoParams = new Object[]{postUserInfo.getNickName(), postUserInfo.getUserIdx()};
+
+        return this.jdbcTemplate.update(postUserInfoQuery, postUserInfoParams);
+    }
+
+    public int createRecommender(PostUserInfo postUserInfo) {
+        String createRecommenderQuery = "insert into Recommend (recommenderIdx, userIdx) VALUES (?,?)";
+        Object[] createRecommenderParams = new Object[]{postUserInfo.getRecommenderIdx(), postUserInfo.getUserIdx()};
+        this.jdbcTemplate.update(createRecommenderQuery, createRecommenderParams);
+
+        updateIdxPoint(postUserInfo.getUserIdx(), 1500);
+        updateIdxPoint(postUserInfo.getRecommenderIdx(), 1500);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
+    public void updateIdxPoint(int userIdx, int point){
+        String updatePointQuery = "insert into Point (point, userIdx) values (?, ?);";
+        Object[] updatePointParams = new Object[]{point, userIdx};
+        this.jdbcTemplate.update(updatePointQuery, updatePointParams);
+    }
+
 }

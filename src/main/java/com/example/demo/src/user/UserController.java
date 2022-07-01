@@ -29,7 +29,7 @@ public class UserController {
     @Autowired
     private final JwtService jwtService;
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService){
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
@@ -38,6 +38,7 @@ public class UserController {
     /**
      * 카카오 로그인 API
      * [POST] /users/kakao-signin
+     *
      * @return BaseResponse<PostUserSignInRes>
      */
     @ResponseBody
@@ -62,22 +63,23 @@ public class UserController {
     /**
      * 닉네임 중복 확인 API
      * [POST] /users/nickname/check
+     *
      * @return BaseResponse<String>
      */
     @ResponseBody
     @PostMapping("/nickname/check")
     public BaseResponse<String> checkNickName(@RequestBody PostUserNickName postUserNickName) {
         try {
-            if(postUserNickName.getNickName() == null){
+            if (postUserNickName.getNickName() == null) {
                 return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
             }
-            if(postUserNickName.getNickName().length() < 1 || postUserNickName.getNickName().length() > 8){
+            if (postUserNickName.getNickName().length() < 1 || postUserNickName.getNickName().length() > 8) {
                 return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
             }
 
             int userIdx = postUserNickName.getUserIdx();
             int userIdxByJwt = jwtService.getUserIdx();
-            if(userIdx != userIdxByJwt){
+            if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
@@ -90,29 +92,75 @@ public class UserController {
     }
 
     /**
-     * 사용자 검색 API
+     * 추천인 확인 API
      * [POST] /users/check
+     *
      * @return BaseResponse<String>
      */
     @ResponseBody
     @PostMapping("/check")
     public BaseResponse<String> userCheck(@RequestBody PostUserNickName postUserNickName) {
         try {
-            if(postUserNickName.getNickName() == null){
+            if (postUserNickName.getNickName() == null) {
                 return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
             }
-            if(postUserNickName.getNickName().length() < 1 || postUserNickName.getNickName().length() > 8){
+            if (postUserNickName.getNickName().length() < 1 || postUserNickName.getNickName().length() > 8) {
                 return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
             }
 
             int userIdx = postUserNickName.getUserIdx();
             int userIdxByJwt = jwtService.getUserIdx();
-            if(userIdx != userIdxByJwt){
+            if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
             userService.userCheck(postUserNickName);
             String result = "존재하는 유저입니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 닉네임 설정 API
+     * [POST] /users/nickname
+     *
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PostMapping("/nickname")
+    public BaseResponse<String> createNickName(@RequestBody PostUserInfo postUserInfo) {
+        try {
+
+            if (postUserInfo.getNickName() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+            }
+            if (postUserInfo.getNickName().length() < 1 || postUserInfo.getNickName().length() > 8) {
+                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+            }
+
+            int userIdx = postUserInfo.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            if (userIdx == postUserInfo.getRecommenderIdx()) {
+                return new BaseResponse<>(POST_USERS_INVALID_RECOMMENDER);
+            }
+
+            String result;
+            if (postUserInfo.getRecommenderIdx() == 0) {
+                userService.createNickName(postUserInfo);
+                result = "닉네임 설정에 성공하였습니다.";
+                return new BaseResponse<>(result);
+            }
+
+            userService.createNickName(postUserInfo);
+            userService.createRecommender(postUserInfo);
+
+            result = "닉네임 설정 및 추천인 등록에 성공하였습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
