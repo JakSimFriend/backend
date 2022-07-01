@@ -152,7 +152,7 @@ public class UserDao {
     }
 
     public void updateIdxPoint(int userIdx, int point){
-        String updatePointQuery = "insert into Point (point, userIdx) values (?, ?);";
+        String updatePointQuery = "insert into Point (point, userIdx, categoryIdx) values (?, ?, 1);";
         Object[] updatePointParams = new Object[]{point, userIdx};
         this.jdbcTemplate.update(updatePointQuery, updatePointParams);
     }
