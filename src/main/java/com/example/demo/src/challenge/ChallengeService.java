@@ -48,4 +48,19 @@ public class ChallengeService {
             throw new BaseException(POST_FAIL_CHALLENGE);
         }
     }
+
+    public void deleteChallenge(int challengeIdx, int userIdx) throws BaseException {
+        try{
+            int check = challengeDao.checkChallenge(challengeIdx);
+            if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+        } catch(Exception exception){
+            throw new BaseException(NOT_EXIST_CHALLENGE);
+        }
+        try{
+            int result = challengeDao.deleteChallenge(challengeIdx, userIdx);
+            if(result == 0) throw new BaseException(DELETE_FAIL_CHALLENGE);
+        } catch(Exception exception){
+            throw new BaseException(DELETE_FAIL_CHALLENGE);
+        }
+    }
 }

@@ -85,4 +85,26 @@ public class ChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 삭제 API
+     * [PATCH] /challenges/:idx/:userIdx/delete
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{idx}/{userIdx}/delete")
+    public BaseResponse<String> deleteChallenge(@PathVariable("idx") int challengeIdx, @PathVariable("userIdx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            challengeService.deleteChallenge(challengeIdx, userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

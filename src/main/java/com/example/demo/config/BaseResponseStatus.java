@@ -74,6 +74,8 @@ public enum BaseResponseStatus {
     POST_FAIL_CHALLENGE(false, 3019, "챌린지 개설에 실패하였습니다."),
     POST_FAIL_PROMISE(false, 3020, "작심 다짐하기 설정에 실패하였습니다."),
 
+    NOT_EXIST_CHALLENGE(false, 3021, "존재하지 않는 챌린지입니다."),
+
     /**
      * 4000 : Database, Server 오류
      */
@@ -82,6 +84,9 @@ public enum BaseResponseStatus {
 
     //[PATCH] /users/{userIdx}
     MODIFY_FAIL_USERNAME(false, 4014, "유저네임 수정 실패"),
+
+    //[PATCH] /challenges/
+    DELETE_FAIL_CHALLENGE(false, 4015, "챌린지 삭제 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),

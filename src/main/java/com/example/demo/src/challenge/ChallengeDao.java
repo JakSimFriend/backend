@@ -39,4 +39,16 @@ public class ChallengeDao {
 
         return challengeIdx;
     }
+
+    public int deleteChallenge(int challengeIdx, int userIdx){
+        String deleteChallengeQuery = "update Challenge set status = 0 where challengeIdx = ? and userIdx = ?; ";
+        Object[] deleteChallengeParams = new Object[]{challengeIdx, userIdx};
+        return this.jdbcTemplate.update(deleteChallengeQuery, deleteChallengeParams);
+    }
+
+    public int checkChallenge(int challengeIdx) {
+        String checkChallengeQuery = "select exists(select challengeIdx from Challenge where challengeIdx = ? and status = 1)";
+        int checkChallengeParams = challengeIdx;
+        return this.jdbcTemplate.queryForObject(checkChallengeQuery, int.class, checkChallengeParams);
+    }
 }
