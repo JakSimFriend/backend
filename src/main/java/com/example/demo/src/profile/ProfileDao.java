@@ -39,4 +39,43 @@ public class ProfileDao {
         );
 
     }
+
+    public List<GetProfile> getProfile(int userIdx){
+        String getProfileQuery = "select u.userIdx userIdx,\n" +
+                "       u.profile profile,\n" +
+                "       u.nickName nickName,\n" +
+                "       u.promise promise,\n" +
+                "       sum(p.point) point\n" +
+                "from User u, Point p\n" +
+                "where u.userIdx = p.userIdx\n" +
+                "and u.status = 1\n" +
+                "and u.userIdx = ? ";
+        String getPointQuery = "select pc.categoryName categoryName,\n" +
+                "       pc.image image,\n" +
+                "       p.createAt createAt,\n" +
+                "       p.point point,\n" +
+                "       sum(point) over(order by p.createAt, pointIdx) as balance\n" +
+                "from PointCategory pc, Point p\n" +
+                "where pc.categoryIdx = p.categoryIdx\n" +
+                "and p.userIdx = ?\n" +
+                "order by p.createAt desc; ";
+        int getProfileParams = userIdx;
+
+        return this.jdbcTemplate.query(getProfileQuery,
+                (rs, rowNum) -> new GetProfile(
+                        rs.getInt("userIdx"),
+                        rs.getString("profile"),
+                        rs.getString("nickName"),
+                        rs.getString("promise"),
+                        rs.getInt("point"),
+                        this.jdbcTemplate.query(getPointQuery, (rs1, rowNum1) -> new GetPoints(
+                                rs1.getString("categoryName"),
+                                rs1.getString("image"),
+                                rs1.getString("createAt"),
+                                rs1.getInt("point"),
+                                rs1.getInt("balance")
+                                ), getProfileParams)
+                ), getProfileParams);
+    }
+
 }

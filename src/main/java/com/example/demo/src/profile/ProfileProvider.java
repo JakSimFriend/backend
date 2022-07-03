@@ -38,4 +38,14 @@ public class ProfileProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetProfile> getProfile(int userIdx) throws BaseException{
+        try{
+            List<GetProfile> getProfile = profileDao.getProfile(userIdx);
+            return getProfile;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

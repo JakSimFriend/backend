@@ -92,4 +92,26 @@ public class ProfileController {
 
     }
 
+    /**
+     * 프로필 홈 조회 API
+     * [GET] /profiles/:idx
+     * @return BaseResponse<GetProfile>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("{idx}")
+    public BaseResponse<List<GetProfile>> getProfile(@PathVariable("idx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetProfile> getProfile = profileProvider.getProfile(userIdx);
+            return new BaseResponse<>(getProfile);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
