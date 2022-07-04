@@ -131,4 +131,15 @@ public class ChallengeDao {
         Object[] deleteWaitingParams = new Object[]{waitingIdx, userIdx};
         return this.jdbcTemplate.update(deleteWaitingQuery, deleteWaitingParams);
     }
+
+    public int refuseWaiting(int waitingIdx, int founderIdx){
+        String refuseWaitingQuery = "update ChallengeWaiting set accept = 2 where waitingIdx = ? and founderIdx = ? and status = 1;";
+        Object[] refuseWaitingParams = new Object[]{waitingIdx, founderIdx};
+        return this.jdbcTemplate.update(refuseWaitingQuery, refuseWaitingParams);
+    }
+
+    public int checkRefuse(int waitingIdx){
+        String checkRefuseQuery = "select exists(select waitingIdx from ChallengeWaiting where waitingIdx = ? and accept = 2)";
+        return this.jdbcTemplate.queryForObject(checkRefuseQuery, int.class, waitingIdx);
+    }
 }
