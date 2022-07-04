@@ -52,13 +52,13 @@ public class ProfileDao {
                 "and u.userIdx = ? ";
         String getPointQuery = "select pc.categoryName categoryName,\n" +
                 "       pc.image image,\n" +
-                "       p.createAt createAt,\n" +
+                "       DATE_FORMAT(p.createAt, '%Y/%m/%d') as createAt,\n" +
                 "       p.point point,\n" +
                 "       sum(point) over(order by p.createAt, pointIdx) as balance\n" +
                 "from PointCategory pc, Point p\n" +
                 "where pc.categoryIdx = p.categoryIdx\n" +
                 "and p.userIdx = ?\n" +
-                "order by p.createAt desc; ";
+                "order by createAt desc; ";
         int getProfileParams = userIdx;
 
         return this.jdbcTemplate.query(getProfileQuery,
