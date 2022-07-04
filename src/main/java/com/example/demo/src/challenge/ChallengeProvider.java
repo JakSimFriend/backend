@@ -30,4 +30,14 @@ public class ChallengeProvider {
         this.challengeDao = challengeDao;
         this.jwtService = jwtService;
     }
+
+    public List<GetChallengeHome> getChallengeHome(int categoryIdx) throws BaseException{
+        try{
+            List<GetChallengeHome> getChallengeHome = challengeDao.getChallengeHome(categoryIdx);
+            return getChallengeHome;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

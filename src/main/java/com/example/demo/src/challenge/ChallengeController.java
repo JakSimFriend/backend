@@ -107,4 +107,27 @@ public class ChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 홈 조회 API
+     * [GET] /challenges/:categoryIdx/:userIdx/home
+     * @return BaseResponse<GetChallengeHome>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{categoryIdx}/{userIdx}/home")
+    public BaseResponse<List<GetChallengeHome>> getChallengeHome(@PathVariable("categoryIdx") int categoryIdx, @PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetChallengeHome> getChallengeHome = challengeProvider.getChallengeHome(categoryIdx);
+            if(getChallengeHome.size() == 0){return new BaseResponse<>(NOT_EXIST_RECOMMENDATION);}
+            return new BaseResponse<>(getChallengeHome);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

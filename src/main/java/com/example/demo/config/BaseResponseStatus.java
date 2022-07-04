@@ -75,6 +75,7 @@ public enum BaseResponseStatus {
     POST_FAIL_PROMISE(false, 3020, "작심 다짐하기 설정에 실패하였습니다."),
 
     NOT_EXIST_CHALLENGE(false, 3021, "존재하지 않는 챌린지입니다."),
+    NOT_EXIST_RECOMMENDATION(false, 3022, "추천 챌린지가 존재하지 않습니다."),
 
     /**
      * 4000 : Database, Server 오류

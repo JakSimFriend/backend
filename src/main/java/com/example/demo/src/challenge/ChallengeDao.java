@@ -51,4 +51,48 @@ public class ChallengeDao {
         int checkChallengeParams = challengeIdx;
         return this.jdbcTemplate.queryForObject(checkChallengeQuery, int.class, checkChallengeParams);
     }
+
+    public List<GetChallengeHome> getChallengeHome(int categoryIdx){
+        String getChallengeHomeQuery = "select c.categoryName,\n" +
+                "       ch.challengeIdx,\n" +
+                "       ch.title,\n" +
+                "       DATE_FORMAT(ch.startDate, '%c월 %e일') as startDate,\n" +
+                "       case\n" +
+                "           when ch.cycle = '1' then concat('하루에 ', ch.count, '회')\n" +
+                "           when ch.cycle = '7' then concat('1주일에 ', ch.count, '회')\n" +
+                "           when ch.cycle = '14' then concat('2주일에 ', ch.count, '회')\n" +
+                "               end as certification,\n" +
+                "       waiting\n" +
+                "from Category c, Challenge ch\n" +
+                "left join (\n" +
+                "    select challengeIdx, count(userIdx) as waiting\n" +
+                "    from ChallengeWaiting\n" +
+                "    where status = 1\n" +
+                "    group by challengeIdx\n" +
+                "    ) as x on ch.challengeIdx = x.challengeIdx\n" +
+                "where c.categoryIdx = ch.categoryIdx\n" +
+                "and ch.status = 1\n" +
+                "and ch.categoryIdx = ?\n" +
+                "and ch.startDate > now()\n" +
+                "order by waiting desc limit 4; ";
+        String getTagsQuery = "select tag\n" +
+                "from ChallengeTag t, Challenge ch\n" +
+                "where ch.challengeIdx = t.challengeIdx\n" +
+                "and ch.status = 1\n" +
+                "and ch.challengeIdx = ?;";
+        int getChallengeHomeParams = categoryIdx;
+
+        return this.jdbcTemplate.query(getChallengeHomeQuery,
+                (rs, rowNum) -> new GetChallengeHome(
+                        rs.getString("categoryName"),
+                        rs.getInt("challengeIdx"),
+                        rs.getString("title"),
+                        rs.getString("startDate"),
+                        rs.getString("certification"),
+                        rs.getInt("waiting"),
+                        this.jdbcTemplate.query(getTagsQuery, (rs1, rowNum1) -> new String(
+                                rs1.getString("tag")
+                        ), rs.getInt("challengeIdx"))
+                ), getChallengeHomeParams);
+    }
 }
