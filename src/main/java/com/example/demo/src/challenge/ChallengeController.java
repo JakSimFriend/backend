@@ -153,4 +153,26 @@ public class ChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 가입 신청 취소 API
+     * [PATCH] /challenges/:waiting/:userIdx/cancel
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{waitingIdx}/{userIdx}/cancel")
+    public BaseResponse<String> deleteWaiting(@PathVariable("waitingIdx") int waitingIdx, @PathVariable("userIdx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            challengeService.deleteWaiting(waitingIdx, userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

@@ -85,4 +85,20 @@ public class ChallengeService {
             throw new BaseException(POST_FAIL_JOIN);
         }
     }
+
+    public void deleteWaiting(int waitingIdx, int userIdx) throws BaseException {
+        try{
+            int check = challengeDao.checkWaiting(waitingIdx);
+            if(check == 0) throw new BaseException(NOT_EXIST_JOIN);
+        } catch(Exception exception){
+            throw new BaseException(NOT_EXIST_JOIN);
+        }
+        try{
+            int result = challengeDao.deleteWaiting(waitingIdx, userIdx);
+            if(result == 0) throw new BaseException(DELETE_FAIL_JOIN);
+        } catch(Exception exception){
+            throw new BaseException(DELETE_FAIL_JOIN);
+        }
+    }
+
 }

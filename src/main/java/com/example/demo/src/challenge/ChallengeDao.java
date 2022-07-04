@@ -106,7 +106,7 @@ public class ChallengeDao {
     }
 
     public int checkJoin(int challengeIdx, int userIdx){
-        String checkNickNameQuery = "select exists(select waitingIdx from ChallengeWaiting where challengeIdx = ? and userIdx = ?)";
+        String checkNickNameQuery = "select exists(select waitingIdx from ChallengeWaiting where challengeIdx = ? and userIdx = ? and status = 1)";
         return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, challengeIdx, userIdx);
     }
 
@@ -121,4 +121,14 @@ public class ChallengeDao {
         return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
     }
 
+    public int checkWaiting(int waitingIdx){
+        String checkWaitingQuery = "select exists(select waitingIdx from ChallengeWaiting where waitingIdx = ? and status = 1)";
+        return this.jdbcTemplate.queryForObject(checkWaitingQuery, int.class, waitingIdx);
+    }
+
+    public int deleteWaiting(int waitingIdx, int userIdx){
+        String deleteWaitingQuery = "update ChallengeWaiting set status = 0 where waitingIdx = ? and userIdx = ?;";
+        Object[] deleteWaitingParams = new Object[]{waitingIdx, userIdx};
+        return this.jdbcTemplate.update(deleteWaitingQuery, deleteWaitingParams);
+    }
 }
