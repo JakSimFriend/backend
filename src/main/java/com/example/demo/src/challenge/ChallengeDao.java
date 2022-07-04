@@ -67,13 +67,14 @@ public class ChallengeDao {
                 "left join (\n" +
                 "    select challengeIdx, count(userIdx) as waiting\n" +
                 "    from ChallengeWaiting\n" +
-                "    where status = 1\n" +
+                "    where status = 1 and accept = 1\n" +
                 "    group by challengeIdx\n" +
                 "    ) as x on ch.challengeIdx = x.challengeIdx\n" +
                 "where c.categoryIdx = ch.categoryIdx\n" +
                 "and ch.status = 1\n" +
                 "and ch.categoryIdx = ?\n" +
                 "and ch.startDate > now()\n" +
+                "and waiting > 0\n" +
                 "order by waiting desc limit 4; ";
         String getTagsQuery = "select tag\n" +
                 "from ChallengeTag t, Challenge ch\n" +
