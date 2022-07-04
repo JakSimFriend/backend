@@ -77,6 +77,9 @@ public enum BaseResponseStatus {
     NOT_EXIST_CHALLENGE(false, 3021, "존재하지 않는 챌린지입니다."),
     NOT_EXIST_RECOMMENDATION(false, 3022, "추천 챌린지가 존재하지 않습니다."),
 
+    POST_FAIL_JOIN(false, 3023, "챌린지 가입에 실패하였습니다."),
+    EXIST_JOIN(false, 3033, "이미 가입 신청이 되어있습니다."),
+
     /**
      * 4000 : Database, Server 오류
      */

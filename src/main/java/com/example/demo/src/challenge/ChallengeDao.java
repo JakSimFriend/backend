@@ -96,4 +96,29 @@ public class ChallengeDao {
                         ), rs.getInt("challengeIdx"))
                 ), getChallengeHomeParams);
     }
+
+    public int getUserIdx(int challengeIdx) {
+        String getUserIdxQuery = "select userIdx from Challenge where challengeIdx = ?;";
+        int getUserIdxParams = challengeIdx;
+
+        return this.jdbcTemplate.queryForObject(getUserIdxQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("userIdx")), getUserIdxParams);
+    }
+
+    public int checkJoin(int challengeIdx, int userIdx){
+        String checkNickNameQuery = "select exists(select waitingIdx from ChallengeWaiting where challengeIdx = ? and userIdx = ?)";
+        return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, challengeIdx, userIdx);
+    }
+
+    public int joinChallenge(PostChallengeJoin postChallengeJoin) {
+        int founderIdx = getUserIdx(postChallengeJoin.getChallengeIdx());
+
+        String joinChallengeQuery = "insert into ChallengeWaiting(challengeIdx, userIdx, founderIdx) values (?, ?, ?);";
+        Object[] joinChallengeParams = new Object[]{postChallengeJoin.getChallengeIdx(), postChallengeJoin.getUserIdx(), founderIdx};
+        this.jdbcTemplate.update(joinChallengeQuery, joinChallengeParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
 }

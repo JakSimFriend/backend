@@ -130,4 +130,27 @@ public class ChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 가입 신청 API
+     * [POST] /challenges/join
+     * @return BaseResponse<Integer>
+     */
+    // Body
+    @ResponseBody
+    @PostMapping("/join")
+    public BaseResponse<Integer> joinChallenge(@RequestBody PostChallengeJoin postChallengejoin) {
+        try {
+            int userIdx = postChallengejoin.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            int result = challengeService.joinChallenge(postChallengejoin);
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

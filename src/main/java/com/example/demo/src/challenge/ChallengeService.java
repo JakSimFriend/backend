@@ -63,4 +63,26 @@ public class ChallengeService {
             throw new BaseException(DELETE_FAIL_CHALLENGE);
         }
     }
+
+    public int joinChallenge(PostChallengeJoin postChallengeJoin) throws BaseException {
+        try{
+            int check = challengeDao.checkChallenge(postChallengeJoin.getChallengeIdx());
+            if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+        } catch(Exception exception){
+            throw new BaseException(NOT_EXIST_CHALLENGE);
+        }
+        try{
+            int join = challengeDao.checkJoin(postChallengeJoin.getChallengeIdx(), postChallengeJoin.getUserIdx());
+            if(join == 1) throw new BaseException(EXIST_JOIN);
+        } catch(Exception exception){
+            throw new BaseException(EXIST_JOIN);
+        }
+        try{
+            int result = challengeDao.joinChallenge(postChallengeJoin);
+            if(result == 0) throw new BaseException(POST_FAIL_JOIN);
+            return result;
+        } catch(Exception exception){
+            throw new BaseException(POST_FAIL_JOIN);
+        }
+    }
 }
