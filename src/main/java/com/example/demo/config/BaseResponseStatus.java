@@ -82,6 +82,8 @@ public enum BaseResponseStatus {
 
     NOT_EXIST_JOIN(false, 3025, "가입 신청이 존재하지 않습니다."),
     EXIST_REFUSE(false, 3026, "이미 거절하였습니다."),
+    EXIST_ACCEPT(false, 3017, "이미 수락하였습니다."),
+    NOT_EXIST_FOUNDER(false, 3018, "챌린지를 개설한 사용자가 아닙니다."),
 
     /**
      * 4000 : Database, Server 오류
@@ -96,6 +98,7 @@ public enum BaseResponseStatus {
     DELETE_FAIL_CHALLENGE(false, 4015, "챌린지 삭제 실패"),
     DELETE_FAIL_JOIN(false, 4016, "가입 신청 취소 실패"),
     REFUSE_FAIL_JOIN(false, 4017, "가입 거절 실패"),
+    ACCEPT_FAIL_jOIN(false, 4018, "가입 수락 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),

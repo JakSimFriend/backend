@@ -122,4 +122,37 @@ public class ChallengeService {
         }
     }
 
+    public void acceptWaiting(int waitingIdx, int founderIdx) throws BaseException {
+        try{
+            int check = challengeDao.checkWaiting(waitingIdx);
+            if(check == 0) throw new BaseException(NOT_EXIST_JOIN);
+        } catch(Exception exception){
+            throw new BaseException(NOT_EXIST_JOIN);
+        }
+        try{
+            int founder = challengeDao.checkFounder(waitingIdx, founderIdx);
+            if(founder == 0) throw new BaseException(NOT_EXIST_FOUNDER);
+        } catch(Exception exception){
+            throw new BaseException(NOT_EXIST_FOUNDER);
+        }
+        try{
+            int accept = challengeDao.checkAccept(waitingIdx);
+            if(accept == 1) throw new BaseException(EXIST_ACCEPT);
+        } catch(Exception exception){
+            throw new BaseException(EXIST_ACCEPT);
+        }
+        try{
+            int refuse = challengeDao.checkRefuse(waitingIdx);
+            if(refuse == 1) throw new BaseException(EXIST_REFUSE);
+        } catch(Exception exception){
+            throw new BaseException(EXIST_REFUSE);
+        }
+        try{
+            int result = challengeDao.acceptWaiting(waitingIdx, founderIdx);
+            if(result == 0) throw new BaseException(ACCEPT_FAIL_jOIN);
+        } catch(Exception exception){
+            throw new BaseException(ACCEPT_FAIL_jOIN);
+        }
+    }
+
 }

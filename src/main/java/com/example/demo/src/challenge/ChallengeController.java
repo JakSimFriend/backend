@@ -197,4 +197,26 @@ public class ChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 가입 수락 API
+     * [PATCH] /challenges/:waiting/:founderIdx/accept
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{waitingIdx}/{founderIdx}/accept")
+    public BaseResponse<String> acceptWaiting(@PathVariable("waitingIdx") int waitingIdx, @PathVariable("founderIdx") int founderIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (founderIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            challengeService.acceptWaiting(waitingIdx, founderIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

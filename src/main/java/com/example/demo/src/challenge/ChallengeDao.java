@@ -4,6 +4,7 @@ import com.example.demo.src.challenge.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -141,5 +142,66 @@ public class ChallengeDao {
     public int checkRefuse(int waitingIdx){
         String checkRefuseQuery = "select exists(select waitingIdx from ChallengeWaiting where waitingIdx = ? and accept = 2)";
         return this.jdbcTemplate.queryForObject(checkRefuseQuery, int.class, waitingIdx);
+    }
+
+    public int checkAccept(int waitingIdx){
+        String checkRefuseQuery = "select exists(select waitingIdx from ChallengeWaiting where waitingIdx = ? and accept = 1)";
+        return this.jdbcTemplate.queryForObject(checkRefuseQuery, int.class, waitingIdx);
+    }
+
+    public int getChallengeIdx(int waitingIdx) {
+        String getChallengeIdxQuery = "select challengeIdx from ChallengeWaiting where waitingIdx = ?";
+        int getChallengeIdxIdxParams = waitingIdx;
+
+        return this.jdbcTemplate.queryForObject(getChallengeIdxQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("challengeIdx")), getChallengeIdxIdxParams);
+    }
+
+    @Transactional
+    public int acceptWaiting(int waitingIdx, int founderIdx){
+
+        // 챌린지 인덱스 받아오기
+        int challengeIdx = getChallengeIdx(waitingIdx);
+
+        // 신청한 유저 인덱스 받아오기
+        int userIdx = getWaitingUser(waitingIdx);
+
+        // 챌린지 멤버에 추가
+        String addMemberQuery = "insert into Member(challengeIdx, userIdx) values (?, ?);";
+        Object[] addMemberParams = new Object[]{challengeIdx, userIdx};
+        this.jdbcTemplate.update(addMemberQuery, addMemberParams);
+
+        subtractUserPoint(userIdx);
+        addChallengePoint(challengeIdx, userIdx);
+
+        // accept 상태 변경
+        String changeAcceptQuery = "update ChallengeWaiting set accept = 1 where waitingIdx = ? and founderIdx = ? and status = 1;";
+        Object[] changeAcceptParams = new Object[]{waitingIdx, founderIdx};
+        return this.jdbcTemplate.update(changeAcceptQuery, changeAcceptParams);
+    }
+
+    public int getWaitingUser(int waitingIdx) {
+        String getWaitingUserQuery = "select userIdx from ChallengeWaiting where waitingIdx = ?;";
+        int getWaitingUserParams = waitingIdx;
+
+        return this.jdbcTemplate.queryForObject(getWaitingUserQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("userIdx")), getWaitingUserParams);
+    }
+
+    public int subtractUserPoint(int userIdx){
+        String subtractUserPointQuery = "insert into Point(point, userIdx, categoryIdx) values (-1000, ?, 3);";
+        Object[] subtractUserPointParams = new Object[]{userIdx};
+        return this.jdbcTemplate.update(subtractUserPointQuery, subtractUserPointParams);
+    }
+
+    public int addChallengePoint(int challengeIdx, int userIdx){
+        String addChallengePointQuery = "insert into ChallengePoint(point, challengeIdx, userIdx) values (1000, ?, ?)";
+        Object[] addChallengePointParams = new Object[]{challengeIdx, userIdx};
+        return this.jdbcTemplate.update(addChallengePointQuery, addChallengePointParams);
+    }
+
+    public int checkFounder(int waitingIdx, int founderIdx){
+        String checkFounderQuery = "select exists(select waitingIdx from ChallengeWaiting where waitingIdx = ? and founderIdx = ?)";
+        return this.jdbcTemplate.queryForObject(checkFounderQuery, int.class, waitingIdx, founderIdx);
     }
 }
