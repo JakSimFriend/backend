@@ -49,4 +49,14 @@ public class SearchProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetChallengeSearch> getSearchKeyword(String keyword) throws BaseException{
+        try{
+            List<GetChallengeSearch> getSearchKeyword = searchDao.getSearchKeyword(keyword);
+            return getSearchKeyword;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

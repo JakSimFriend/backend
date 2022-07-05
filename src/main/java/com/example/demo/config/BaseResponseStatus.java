@@ -57,6 +57,9 @@ public enum BaseResponseStatus {
     POST_PROFILES_EMPTY_PROMISE(false, 2200, "작심 다짐하기를 입력해주세요."),
     POST_PROFILES_INVALID_PROMISE(false, 2201, "작심 다짐하기 형식을 확인해주세요."),
 
+    GET_SEARCH_EMPTY_KEYWORD(false, 2202, "검색어를 입력해주세요."),
+    GET_SEARCH_INVALID_KEYWORD(false, 2203, "검색어 형식을 확인해주세요"),
+
 
     /**
      * 3000 : Response 오류

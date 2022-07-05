@@ -67,4 +67,29 @@ public class SearchController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 검색 API
+     * [GET] /searches/:userIdx?keyword=
+     * @return BaseResponse<List<GetChallengeSearch>>
+     */
+    //Query String
+    @ResponseBody
+    @GetMapping("/{userIdx}")
+    public BaseResponse<List<GetChallengeSearch>> getSearchKeyword(@PathVariable("userIdx") int userIdx, @RequestParam(value = "keyword") String keyword) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            if(keyword.length() > 10) return new BaseResponse<>(GET_SEARCH_INVALID_KEYWORD);
+
+            List<GetChallengeSearch> getSearchKeyword = searchProvider.getSearchKeyword(keyword);
+            if(getSearchKeyword.get(0).getRecruitments().size() == 0 && getSearchKeyword.get(0).getEnds().size() == 0){return new BaseResponse<>(NOT_EXIST_SEARCH);}
+            return new BaseResponse<>(getSearchKeyword);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
