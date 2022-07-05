@@ -204,4 +204,53 @@ public class ChallengeDao {
         String checkFounderQuery = "select exists(select waitingIdx from ChallengeWaiting where waitingIdx = ? and founderIdx = ?)";
         return this.jdbcTemplate.queryForObject(checkFounderQuery, int.class, waitingIdx, founderIdx);
     }
+
+    public GetChallengeDetail getChallengeDetail(int challengeIdx, int userIdx) {
+        String getChallengeDetailQuery = "select c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       c.content,\n" +
+                "       c.pee,\n" +
+                "       concat(DATE_FORMAT(c.startDate, '%c월 %e일'), ' ~ ', DATE_FORMAT(ADDDATE(c.startDate, 14), '%c월 %e일')) as date,\n" +
+                "       case\n" +
+                "           when c.cycle = '1' then concat('하루에 ', c.count, '회')\n" +
+                "           when c.cycle = '7' then concat('1주일에 ', c.count, '회')\n" +
+                "           when c.cycle = '14' then concat('2주일에 ', c.count, '회')\n" +
+                "               end as certification,\n" +
+                "       accept,\n" +
+                "       waiting,\n" +
+                "       c.tier,\n" +
+                "       (select sum(point) from Point where userIdx = ?) as myPoint,\n" +
+                "       exists(select userIdx from ChallengeWaiting where userIdx = ?) as existStatus\n" +
+                "from Challenge c\n" +
+                "    left join (\n" +
+                "    select challengeIdx, count(userIdx) as accept\n" +
+                "    from ChallengeWaiting\n" +
+                "    where status = 1 and accept = 1\n" +
+                "    group by challengeIdx\n" +
+                "    ) as x on c.challengeIdx = x.challengeIdx\n" +
+                "left join (\n" +
+                "    select challengeIdx, count(userIdx) as waiting\n" +
+                "    from ChallengeWaiting\n" +
+                "    where status = 1 and accept = 0\n" +
+                "    group by challengeIdx\n" +
+                "    ) as y on c.challengeIdx = y.challengeIdx\n" +
+                "where status = 1 and c.challengeIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(getChallengeDetailQuery,
+                (rs, rowNum) -> new GetChallengeDetail(
+                        rs.getInt("challengeIdx"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getInt("pee"),
+                        rs.getString("date"),
+                        rs.getString("certification"),
+                        rs.getInt("accept"),
+                        rs.getInt("waiting"),
+                        rs.getString("tier"),
+                        rs.getInt("myPoint"),
+                        rs.getInt("existStatus")),
+                userIdx, userIdx, challengeIdx
+        );
+
+    }
 }
