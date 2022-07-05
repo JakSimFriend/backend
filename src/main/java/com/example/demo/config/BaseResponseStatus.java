@@ -85,6 +85,8 @@ public enum BaseResponseStatus {
     EXIST_ACCEPT(false, 3017, "이미 수락하였습니다."),
     NOT_EXIST_FOUNDER(false, 3018, "챌린지를 개설한 사용자가 아닙니다."),
 
+    NOT_EXIST_SEARCH(false, 3019, "챌린지가 존재하지 않습니다."),
+
     /**
      * 4000 : Database, Server 오류
      */
