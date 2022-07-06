@@ -2,12 +2,13 @@ package com.example.demo.src.mychallenge;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.mychallenge.model.GetMyChallengeProgress;
+import com.example.demo.src.mychallenge.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -50,6 +51,27 @@ public class MyChallengeController {
             if(getMyChallengeProgress.get(0).getProceedings().size() == 0 && getMyChallengeProgress.get(0).getBefores().size() == 0){return new BaseResponse<>(NOT_EXIST_SEARCH);}
             return new BaseResponse<>(getMyChallengeProgress);
         } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 챌린지 인증하기 API
+     * [POST] /my-challenges/:idx/:userIdx/certification
+     * @return BaseResponse<PostCertificationRes>
+     */
+    @ResponseBody
+    @PostMapping("/{idx}/{userIdx}/certification")
+    public BaseResponse<PostCertificationRes> createCertification(@PathVariable("idx") int challengeIdx, @PathVariable("userIdx") int userIdx, @RequestParam("images") @RequestPart MultipartFile multipartFile) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            PostCertificationRes postCertificationRes = myChallengeService.createCertification(challengeIdx, userIdx, multipartFile);
+            return new BaseResponse<>(postCertificationRes);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

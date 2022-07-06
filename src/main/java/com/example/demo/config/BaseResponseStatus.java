@@ -93,6 +93,13 @@ public enum BaseResponseStatus {
 
     POST_FAIL_PROFILE(false, 3031, "프로필 사진 수정에 실패하였습니다."),
 
+    NOT_PROCEEDING_CHALLENGE(false, 3032, "진행중인 챌린지가 아닙니다."),
+    NOT_EXIST_MEMBER(false, 3033, "챌린지 멤버가 아닙니다."),
+    EXIST_CERTIFICATION(false, 3034, "오늘은 이미 인증하였습니다."),
+    DEADLINE_END(false,3035, "오늘의 인증 마감시간이 지났습니다."),
+
+
+
     /**
      * 4000 : Database, Server 오류
      */
@@ -110,6 +117,8 @@ public enum BaseResponseStatus {
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
+
+    CERTIFICATION_FAIL(false, 4019, "챌린지 인증에 실패하였습니다."),
 
 
     // 5000 : 기타 오류
