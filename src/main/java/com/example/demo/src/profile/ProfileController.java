@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -110,6 +111,28 @@ public class ProfileController {
             List<GetProfile> getProfile = profileProvider.getProfile(userIdx);
             return new BaseResponse<>(getProfile);
         } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 프로필 사진 수정 API
+     * [POST] /profiles/:idx/image
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PostMapping("/{idx}/image")
+    public BaseResponse<String> modifyProfileImage(@PathVariable("idx") int userIdx, @RequestParam("images") @RequestPart MultipartFile multipartFile) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            profileService.modifyProfileImage(userIdx, multipartFile);
+            String result = "프로필 사진 변경에 성공하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

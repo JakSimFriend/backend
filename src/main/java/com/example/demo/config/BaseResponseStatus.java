@@ -91,6 +91,8 @@ public enum BaseResponseStatus {
     NOT_EXIST_SEARCH(false, 3029, "챌린지가 존재하지 않습니다."),
     NOT_EXIST_DETAIL(false, 3030, "챌린지 정보가 존재하지 않습니다."),
 
+    POST_FAIL_PROFILE(false, 3031, "프로필 사진 수정에 실패하였습니다."),
+
     /**
      * 4000 : Database, Server 오류
      */

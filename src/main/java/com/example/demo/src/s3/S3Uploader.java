@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.demo.src.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;

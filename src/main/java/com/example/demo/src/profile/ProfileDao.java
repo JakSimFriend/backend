@@ -78,4 +78,11 @@ public class ProfileDao {
                 ), getProfileParams);
     }
 
+    public int modifyProfileImage(int userIdx, String imageUrl){
+        String modifyProfileImageQuery = "update User set profile = ? where userIdx = ? and status = 1;\n";
+        Object[] modifyProfileImageParams = new Object[]{imageUrl, userIdx};
+
+        return this.jdbcTemplate.update(modifyProfileImageQuery, modifyProfileImageParams);
+    }
+
 }
