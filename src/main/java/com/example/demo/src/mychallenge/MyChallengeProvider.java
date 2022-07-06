@@ -27,12 +27,12 @@ public class MyChallengeProvider {
     }
 
     public List<GetMyChallengeProgress> getMyChallengeProgress(int userIdx) throws BaseException {
-        try{
+       // try{
             List<GetMyChallengeProgress> getMyChallengeProgress = myChallengeDao.getMyChallengeProgress(userIdx);
             return getMyChallengeProgress;
-        }
-        catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+     //   }
+     //   catch (Exception exception) {
+     //       throw new BaseException(DATABASE_ERROR);
+      //  }
     }
 }

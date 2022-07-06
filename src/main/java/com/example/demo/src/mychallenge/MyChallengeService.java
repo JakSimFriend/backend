@@ -52,14 +52,20 @@ public class MyChallengeService {
         try {
             String nickName = myChallengeDao.getNickName(userIdx);
 
-            int beforePercent = myChallengeDao.getPercent(challengeIdx, userIdx);
+            int exist = myChallengeDao.existCertification(challengeIdx, userIdx);
+            if(exist == 0){
+                String imageUrl = awsS3Service.uploadProfile(multipartFile);
+                int certificationIdx = myChallengeDao.certification(challengeIdx, userIdx, imageUrl);
+                int afterPercent = myChallengeDao.getPercent(challengeIdx, userIdx);
+                return new PostCertificationRes(certificationIdx, challengeIdx, userIdx, nickName, 0, afterPercent);
+            } else{
+                int beforePercent = myChallengeDao.getPercent(challengeIdx, userIdx);
+                String imageUrl = awsS3Service.uploadProfile(multipartFile);
+                int certificationIdx = myChallengeDao.certification(challengeIdx, userIdx, imageUrl);
+                int afterPercent = myChallengeDao.getPercent(challengeIdx, userIdx);
+                return new PostCertificationRes(certificationIdx, challengeIdx, userIdx, nickName, beforePercent, afterPercent);
+            }
 
-            String imageUrl = awsS3Service.uploadProfile(multipartFile);
-            int certificationIdx = myChallengeDao.certification(challengeIdx, userIdx, imageUrl);
-
-            int afterPercent = myChallengeDao.getPercent(challengeIdx, userIdx);
-
-            return new PostCertificationRes(certificationIdx, challengeIdx, userIdx, nickName, beforePercent, afterPercent);
         } catch (Exception exception) {
             throw new BaseException(CERTIFICATION_FAIL);
         }

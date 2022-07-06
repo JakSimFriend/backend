@@ -39,15 +39,15 @@ public class MyChallengeDao {
                 "           when c.cycle = '7' then round((nowCount/(count * 2)) * 100)\n" +
                 "           when c.cycle = '14' then round((nowCount/count) * 100)\n" +
                 "               end as percent\n" +
-                "from User u, Challenge c, Member m\n" +
-                "left join ( select userIdx, count(certificationIdx) nowCount\n" +
+                "from User u, Challenge c,  Member m\n" +
+                "left join ( select userIdx, challengeIdx, count(certificationIdx) nowCount\n" +
                 "    from Certification\n" +
-                "    where status = 1\n" +
+                "    where challengeIdx = ? and status = 1\n" +
+                "    group by userIdx\n" +
                 "    ) as x on x.userIdx = m.userIdx\n" +
-                "where u.status = 1\n" +
-                "and u.userIdx = m.userIdx\n" +
+                "where c.status = 1\n" +
                 "and c.challengeIdx = m.challengeIdx\n" +
-                "and c.status = 1\n" +
+                "and u.userIdx = m.userIdx\n" +
                 "and m.challengeIdx = ?\n" +
                 "order by percent desc;";
         String getBeforeQuery = "select ch.challengeIdx,\n" +
@@ -92,7 +92,7 @@ public class MyChallengeDao {
                                         rs2.getString("profile"),
                                         rs2.getString("nickName"),
                                         rs2.getInt("percent")
-                                ), rs1.getInt("challengeIdx"))
+                                ), rs1.getInt("challengeIdx"), rs1.getInt("challengeIdx"))
                         ), userIdx),
                         rs.getInt("beforeCount"),
                         this.jdbcTemplate.query(getBeforeQuery, (rs1, rowNum1) -> new GetBefore(
@@ -161,20 +161,23 @@ public class MyChallengeDao {
                 "           when c.cycle = '1' then round((nowCount/14) * 100)\n" +
                 "           when c.cycle = '7' then round((nowCount/(count * 2)) * 100)\n" +
                 "           when c.cycle = '14' then round((nowCount/count) * 100)\n" +
-                "               end as percent\n" +
-                "from Challenge c, Member m\n" +
-                "left join ( select userIdx, count(certificationIdx) nowCount\n" +
-                "    from Certification\n" +
-                "    where status = 1\n" +
+                "           end as percent\n" +
+                "from Challenge c\n" +
+                " inner join ( select challengeIdx, userIdx, count(certificationIdx) nowCount\n" +
+                "    from Certification ce\n" +
+                "    where ce.status = 1\n" +
+                "    and ce.challengeIdx = ?\n" +
+                "    and ce.userIdx = ?\n" +
                 "    group by challengeIdx\n" +
-                "    ) as x on x.userIdx = m.userIdx\n" +
-                "where c.status = 1\n" +
-                "and m.status = 1\n" +
-                "and c.challengeIdx = m.challengeIdx\n" +
-                "and m.challengeIdx = ?\n" +
-                "and m.userIdx = ?";
+                "    ) as x on x.challengeIdx = c.challengeIdx\n" +
+                "where c.status = 1;";
 
         return this.jdbcTemplate.queryForObject(getPercentQuery, (rs, rowNum) -> new Integer(rs.getInt("percent")), challengeIdx, userIdx);
+    }
+
+    public int existCertification(int challengeIdx,  int userIdx) {
+        String checkCertificationQuery = "select exists(select userIdx from Certification ce where ce.status = 1 and challengeIdx = ? and userIdx = ?);\n";
+        return this.jdbcTemplate.queryForObject(checkCertificationQuery, int.class, challengeIdx, userIdx);
     }
 
 }
