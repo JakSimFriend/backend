@@ -75,4 +75,26 @@ public class MyChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     *  진행중 정보 조회 API
+     * [GET] /my-challenges/:idx/:userIdx/progress-info
+     * @return BaseResponse<List<GetProgressInfo>>
+     */
+    //Query String
+    @ResponseBody
+    @GetMapping("/{idx}/{userIdx}/progress-info")
+    public BaseResponse<List<GetProgressInfo>> getProgressInfo(@PathVariable("idx") int challengeIdx, @PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetProgressInfo> getProgressInfo = myChallengeProvider.getProgressInfo(challengeIdx, userIdx);
+            return new BaseResponse<>(getProgressInfo);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
