@@ -126,7 +126,7 @@ public class UserDao {
     }
 
     public int getUserIdx(String nickName){
-        String getUserIdxQuery = "select userIdx from User where nickName = ?";
+        String getUserIdxQuery = "select userIdx from User where nickName = ? and status = 1";
         String getUserIdxParams = nickName;
         return this.jdbcTemplate.queryForObject(getUserIdxQuery,
                 (rs, rowNum) -> new Integer(rs.getInt("userIdx")), getUserIdxParams);
