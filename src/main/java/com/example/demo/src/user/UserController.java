@@ -12,10 +12,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 
 @RestController
 @RequestMapping("/users")
@@ -58,6 +56,30 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
 
+    }
+
+    /**
+     * 구글 로그인 API
+     * [POST] /users/kakao-login
+     *
+     * @return BaseResponse<PostUserSignInRes>
+     */
+    @ResponseBody
+    @PostMapping("/google-login")
+    public BaseResponse<PostLoginRes> postGoogleLogIn() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String accessToken = request.getHeader("GOOGLE-ACCESS-TOKEN");
+
+        if (accessToken == null || accessToken.length() == 0) {
+            return new BaseResponse<>(EMPTY_ACCESS_TOKEN);
+        }
+
+        try {
+            PostLoginRes postLoginRes = userService.createGoogleSignIn(accessToken);
+            return new BaseResponse<>(postLoginRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 
     /**
@@ -161,6 +183,28 @@ public class UserController {
             userService.createRecommender(postUserInfo);
 
             result = "닉네임 설정 및 추천인 등록에 성공하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 회원 탈퇴 API
+     * [PATCH] /users/:idx/delete
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{idx}/delete")
+    public BaseResponse<String> deleteUser(@PathVariable("idx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            userService.deleteUser(userIdx);
+            String result = "성공";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

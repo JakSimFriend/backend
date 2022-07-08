@@ -119,6 +119,7 @@ public enum BaseResponseStatus {
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
     CERTIFICATION_FAIL(false, 4019, "챌린지 인증에 실패하였습니다."),
+    DELETE_FAIL_USER(false, 4020, "탈퇴에 실패하였습니다."),
 
 
     // 5000 : 기타 오류

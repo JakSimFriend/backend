@@ -157,4 +157,15 @@ public class UserDao {
         this.jdbcTemplate.update(updatePointQuery, updatePointParams);
     }
 
+    public int deleteUser(int userIdx) {
+        String deleteUserQuery = "update User set email = concat(email, '-'), status = 0, nickName = '알수없음' where userIdx = ? and status = 1;";
+        Object[] deleteUserParams = new Object[]{userIdx};
+
+        return this.jdbcTemplate.update(deleteUserQuery, deleteUserParams);
+    }
+
+    public int checkUser(int userIdx) {
+        String checkUserQuery = "select exists(select userIdx from User where userIdx = ? and status = 1);";
+        return this.jdbcTemplate.queryForObject(checkUserQuery, int.class, userIdx);}
+
 }

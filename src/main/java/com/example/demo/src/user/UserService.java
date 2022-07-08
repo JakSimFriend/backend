@@ -3,12 +3,12 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -135,6 +135,105 @@ public class UserService {
         }
     }
 
+    /**
+     * 구글 로그인 API
+     *
+     * @param accessToken
+     * @return PostLogInRes
+     * @throws BaseException
+     */
+    public PostLoginRes createGoogleSignIn(String accessToken) throws BaseException {
+        final String RequestUrl = "https://www.googleapis.com/oauth2/v2/userinfo.email";
+
+        JSONObject jsonObject;
+
+        String header = "Bearer " + accessToken; // Bearer 다음에 공백 추가
+        String apiURL = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
+
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Authorization", header);
+
+        HttpURLConnection con;
+        try {
+            URL url = new URL(apiURL);
+            con = (HttpURLConnection) url.openConnection();
+        } catch (MalformedURLException e) {
+            throw new BaseException(WRONG_URL);
+        } catch (IOException e) {
+            throw new BaseException(FAILED_TO_CONNECT);
+        }
+
+        String body;
+        try {
+            con.setRequestMethod("GET");
+            for (Map.Entry<String, String> rqheader : requestHeaders.entrySet()) {
+                con.setRequestProperty(rqheader.getKey(), rqheader.getValue());
+            }
+
+            int responseCode = con.getResponseCode();
+            InputStreamReader streamReader;
+            if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
+                streamReader = new InputStreamReader(con.getInputStream());
+            } else { // 에러 발생
+                streamReader = new InputStreamReader(con.getErrorStream());
+            }
+
+            BufferedReader lineReader = new BufferedReader(streamReader);
+            StringBuilder responseBody = new StringBuilder();
+
+            String line;
+            while ((line = lineReader.readLine()) != null) {
+                responseBody.append(line);
+            }
+
+            body = responseBody.toString();
+        } catch (IOException e) {
+            throw new BaseException(FAILED_TO_READ_RESPONSE);
+        } finally {
+            con.disconnect();
+        }
+
+        if (body.length() == 0) {
+            throw new BaseException(FAILED_TO_READ_RESPONSE);
+        }
+        System.out.println(body);
+
+        String socialId;
+        String response;
+        try {
+            JSONParser jsonParser = new JSONParser();
+            jsonObject = (JSONObject) jsonParser.parse(body);
+            socialId = "kakao_" + jsonObject.get("id").toString();
+            response = jsonObject.get("email").toString();
+        } catch (Exception e) {
+            throw new BaseException(FAILED_TO_PARSE);
+        }
+
+        String email = null;
+        try {
+            JSONParser jsonParser = new JSONParser();
+            JSONObject responObj = (JSONObject) jsonParser.parse(response);
+            if (responObj.get("email") != null) {
+                email = responObj.get("email").toString();
+                System.out.println(email);
+            }
+        } catch (Exception e) {
+            throw new BaseException(FAILED_TO_PARSE);
+        }
+
+        if (userDao.checkEmail(email) == 1) {
+            GetSocial getSocial = userDao.getIdx(email);
+            int userIdx = getSocial.getUserIdx();
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(userIdx, jwt);
+        } else {
+            int userIdx = userDao.postEmail(email);
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(userIdx, jwt);
+        }
+    }
+
+
     public void checkNickName(PostUserNickName postUserNickName) throws BaseException {
         String nickName = postUserNickName.getNickName();
         if (userDao.checkNickName(nickName) == 1) {
@@ -173,6 +272,18 @@ public class UserService {
             }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void deleteUser(int userIdx) throws BaseException {
+        int check = userDao.checkUser(userIdx);
+        if (check == 0) throw new BaseException(NOT_EXIST_USER);
+
+        try {
+            int result = userDao.deleteUser(userIdx);
+            if (result == 0) throw new BaseException(DELETE_FAIL_USER);
+        } catch (Exception exception) {
+            throw new BaseException(DELETE_FAIL_USER);
         }
     }
 
