@@ -98,6 +98,7 @@ public enum BaseResponseStatus {
     EXIST_CERTIFICATION(false, 3034, "오늘은 이미 인증하였습니다."),
     DEADLINE_END(false,3035, "오늘의 인증 마감시간이 지났습니다."),
     PROCEEDING_CHALLENGE(false, 3036, "진행 중인 챌린지는 삭제할 수 없습니다."),
+    NOT_EXIST_POINT(false, 3037, "포인트가 부족합니다."),
 
 
 

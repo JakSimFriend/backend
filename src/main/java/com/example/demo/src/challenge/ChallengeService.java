@@ -41,6 +41,9 @@ public class ChallengeService {
     }
 
     public int createChallenge(PostChallenge postChallenge) throws BaseException {
+        int point = challengeDao.getPoint(postChallenge.getUserIdx());
+        if(point < 1000) throw new BaseException(NOT_EXIST_POINT);
+
         try {
             int result = challengeDao.createChallenge(postChallenge);
             return result;

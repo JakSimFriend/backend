@@ -283,4 +283,9 @@ public class ChallengeDao {
         int checkChallengeParams = challengeIdx;
         return this.jdbcTemplate.queryForObject(checkProceedingQuery, int.class, checkChallengeParams);
     }
+
+    public int getPoint(int userIdx) {
+        String getPointQuery = "select sum(point) point from Point where userIdx = ?;";
+        return this.jdbcTemplate.queryForObject(getPointQuery, (rs, rowNum) -> new Integer(rs.getInt("point")), userIdx);
+    }
 }
