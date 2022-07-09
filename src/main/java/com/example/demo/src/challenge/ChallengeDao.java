@@ -38,6 +38,19 @@ public class ChallengeDao {
             this.jdbcTemplate.update(createTagQuery, createTagParams);
         }
 
+        int userIdx = postChallenge.getUserIdx();
+        String addWaitingQuery = "insert into ChallengeWaiting(challengeIdx, userIdx, founderIdx, accept) values (?, ?, ?, ?);";
+        Object[] addWaitingParams = new Object[]{challengeIdx, userIdx, userIdx, 1};
+        this.jdbcTemplate.update(addWaitingQuery, addWaitingParams);
+
+        // 챌린지 멤버에 추가
+        String addMemberQuery = "insert into Member(challengeIdx, userIdx) values (?, ?);";
+        Object[] addMemberParams = new Object[]{challengeIdx, userIdx};
+        this.jdbcTemplate.update(addMemberQuery, addMemberParams);
+
+        subtractUserPoint(userIdx);
+        addChallengePoint(challengeIdx, userIdx);
+
         return challengeIdx;
     }
 
