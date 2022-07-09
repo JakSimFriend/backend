@@ -288,4 +288,17 @@ public class ChallengeDao {
         String getPointQuery = "select sum(point) point from Point where userIdx = ?;";
         return this.jdbcTemplate.queryForObject(getPointQuery, (rs, rowNum) -> new Integer(rs.getInt("point")), userIdx);
     }
+
+    public ClosingCondition closingCondition(int challengeIdx) {
+        String closingConditionQuery = "select datediff(startDate, now()) startDate,\n" +
+                "       (select count(m.userIdx) from Member m where c.challengeIdx = m.challengeIdx) people\n" +
+                "from Challenge c\n" +
+                "where c.status = 1\n" +
+                "and c.challengeIdx = ?;";
+        return this.jdbcTemplate.queryForObject(closingConditionQuery,
+                (rs, rowNum) -> new ClosingCondition(
+                        rs.getInt("startDate"),
+                        rs.getInt("people")
+                        ), challengeIdx);
+    }
 }

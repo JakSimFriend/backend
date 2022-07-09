@@ -68,18 +68,23 @@ public class ChallengeService {
     }
 
     public int joinChallenge(PostChallengeJoin postChallengeJoin) throws BaseException {
-        try{
-            int check = challengeDao.checkChallenge(postChallengeJoin.getChallengeIdx());
-            if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
-        } catch(Exception exception){
-            throw new BaseException(NOT_EXIST_CHALLENGE);
-        }
-        try{
-            int join = challengeDao.checkJoin(postChallengeJoin.getChallengeIdx(), postChallengeJoin.getUserIdx());
-            if(join == 1) throw new BaseException(EXIST_JOIN);
-        } catch(Exception exception){
-            throw new BaseException(EXIST_JOIN);
-        }
+        int check = challengeDao.checkChallenge(postChallengeJoin.getChallengeIdx());
+        if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        int join = challengeDao.checkJoin(postChallengeJoin.getChallengeIdx(), postChallengeJoin.getUserIdx());
+        if(join == 1) throw new BaseException(EXIST_JOIN);
+
+        int proceeding = challengeDao.checkProceeding(postChallengeJoin.getChallengeIdx());
+        if(proceeding == 1) throw new BaseException(PROCEEDING_CHALLENGE_JOIN);
+
+        ClosingCondition closingCondition = challengeDao.closingCondition(postChallengeJoin.getChallengeIdx());
+
+        if(closingCondition.getStartDate() < 1 || closingCondition.getPeople() > 5)
+            throw new BaseException(CLOSED_CHALLENGE);
+
+        int point = challengeDao.getPoint(postChallengeJoin.getUserIdx());
+        if(point < 1000) throw new BaseException(NOT_EXIST_POINT);
+
         try{
             int result = challengeDao.joinChallenge(postChallengeJoin);
             if(result == 0) throw new BaseException(POST_FAIL_JOIN);
