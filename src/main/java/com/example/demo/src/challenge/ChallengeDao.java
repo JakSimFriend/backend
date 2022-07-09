@@ -1,5 +1,7 @@
 package com.example.demo.src.challenge;
 
+import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.challenge.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -172,13 +174,16 @@ public class ChallengeDao {
     }
 
     @Transactional
-    public int acceptWaiting(int waitingIdx, int founderIdx){
+    public int acceptWaiting(int waitingIdx, int founderIdx) throws Exception{
 
         // 챌린지 인덱스 받아오기
         int challengeIdx = getChallengeIdx(waitingIdx);
 
         // 신청한 유저 인덱스 받아오기
         int userIdx = getWaitingUser(waitingIdx);
+
+        int check = checkUser(userIdx);
+        if(check == 0) throw new BaseException(BaseResponseStatus.NOT_EXIST_USER);
 
         // 챌린지 멤버에 추가
         String addMemberQuery = "insert into Member(challengeIdx, userIdx) values (?, ?);";
@@ -266,5 +271,10 @@ public class ChallengeDao {
                 userIdx, userIdx, challengeIdx
         );
 
+    }
+
+    public int checkUser(int userIdx){
+        String checkUserQuery = "select exists(select userIdx from User where userIdx = ? and status = 1)";
+        return this.jdbcTemplate.queryForObject(checkUserQuery, int.class, userIdx);
     }
 }
