@@ -40,8 +40,9 @@ public class SearchDao {
                 "where c.categoryIdx = ca.categoryIdx\n" +
                 "and c.status = 1\n" +
                 "and startDate > now()\n" +
+                "and accept < 6\n" +
                 "order by startDate;";
-        String getTagsQuery = "select tag from ChallengeTag t, Challenge ch where ch.challengeIdx = t.challengeIdx and ch.status = 1 and ch.challengeIdx = ?;\n";
+        String getTagsQuery = "select tag from ChallengeTag t, Challenge ch where ch.challengeIdx = t.challengeIdx and ch.status = 1 and ch.challengeIdx = ? order by tag";
         String getEndQuery = "select c.challengeIdx,\n" +
                 "       c.title,\n" +
                 "       ca.categoryName,\n" +
@@ -61,8 +62,8 @@ public class SearchDao {
                 "    ) as x on c.challengeIdx = x.challengeIdx\n" +
                 "where c.categoryIdx = ca.categoryIdx\n" +
                 "and c.status = 1\n" +
-                "and startDate < now()\n" +
-                "order by startDate;";
+                "and (startDate < now() or accept = 6)\n" +
+                "order by startDate desc ;\n";
         return this.jdbcTemplate.query(getTestQuery,
                 (rs, rowNum) -> new GetChallengeSearch(
                         this.jdbcTemplate.query(getRecruitQuery, (rs1, rowNum1) -> new GetRecruitment(
@@ -108,13 +109,14 @@ public class SearchDao {
                 "where c.categoryIdx = ca.categoryIdx\n" +
                 "and c.status = 1\n" +
                 "and startDate > now()\n" +
+                "and accept < 6\n" +
                 "and c.categoryIdx = ?\n" +
                 "order by startDate;";
-        String getTagsQuery = "select tag from ChallengeTag t, Challenge ch where ch.challengeIdx = t.challengeIdx and ch.status = 1 and ch.challengeIdx = ?;\n";
+        String getTagsQuery = "select tag from ChallengeTag t, Challenge ch where ch.challengeIdx = t.challengeIdx and ch.status = 1 and ch.challengeIdx = ? order by tag;";
         String getEndQuery = "select c.challengeIdx,\n" +
                 "       c.title,\n" +
                 "       ca.categoryName,\n" +
-                "       DATE_FORMAT(c.startDate, '종료') as endStatus,\n" +
+                "       DATE_FORMAT(c.startDate, '종료') as startDate,\n" +
                 "       case\n" +
                 "           when c.cycle = '1' then concat('하루에 ', c.count, '회')\n" +
                 "           when c.cycle = '7' then concat('1주일에 ', c.count, '회')\n" +
@@ -130,9 +132,9 @@ public class SearchDao {
                 "    ) as x on c.challengeIdx = x.challengeIdx\n" +
                 "where c.categoryIdx = ca.categoryIdx\n" +
                 "and c.status = 1\n" +
-                "and startDate < now()\n" +
+                "and (startDate < now() or accept = 6)\n" +
                 "and c.categoryIdx = ?\n" +
-                "order by startDate;";
+                "order by startDate desc ;";
         return this.jdbcTemplate.query(getTestQuery,
                 (rs, rowNum) -> new GetChallengeSearch(
                         this.jdbcTemplate.query(getRecruitQuery, (rs1, rowNum1) -> new GetRecruitment(
@@ -178,9 +180,10 @@ public class SearchDao {
                 "where c.categoryIdx = ca.categoryIdx\n" +
                 "and c.status = 1\n" +
                 "and startDate > now()\n" +
+                "and accept < 6\n" +
                 "and ((ct.tag like concat('%', ?, '%') and ct.challengeIdx = c.challengeIdx ) or c.title like concat('%', ?, '%'))\n" +
                 "order by startDate;";
-        String getTagsQuery = "select tag from ChallengeTag t, Challenge ch where ch.challengeIdx = t.challengeIdx and ch.status = 1 and ch.challengeIdx = ?;\n";
+        String getTagsQuery = "select tag from ChallengeTag t, Challenge ch where ch.challengeIdx = t.challengeIdx and ch.status = 1 and ch.challengeIdx = ? order by tag;\n";
         String getEndQuery = "select distinct c.challengeIdx,\n" +
                 "       c.title,\n" +
                 "       ca.categoryName,\n" +
@@ -200,7 +203,7 @@ public class SearchDao {
                 "    ) as x on c.challengeIdx = x.challengeIdx\n" +
                 "where c.categoryIdx = ca.categoryIdx\n" +
                 "and c.status = 1\n" +
-                "and startDate < now()\n" +
+                "and (startDate < now() or accept = 6)\n" +
                 "and ((ct.tag like concat('%', ?, '%') and ct.challengeIdx = c.challengeIdx ) or c.title like concat('%', ?, '%'))\n" +
                 "order by startDate desc;";
         return this.jdbcTemplate.query(getTestQuery,
