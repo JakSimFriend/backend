@@ -49,4 +49,19 @@ public class MyChallengeProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetBeforeInfo> getBeforeInfo(int challengeIdx, int userIdx) throws BaseException {
+        int checkChallenge = myChallengeDao.checkChallenge(challengeIdx);
+        if(checkChallenge == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        int checkMember = myChallengeDao.checkMember(challengeIdx, userIdx);
+        if(checkMember == 0) throw new BaseException(NOT_EXIST_MEMBER);
+
+        try {
+            List<GetBeforeInfo> getBeforeInfo = myChallengeDao.getBeforeInfo(challengeIdx);
+            return getBeforeInfo;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
