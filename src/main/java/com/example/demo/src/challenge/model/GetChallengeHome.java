@@ -15,6 +15,6 @@ public class GetChallengeHome {
     private String title;
     private String startDate;
     private String certification;
-    private int waiting;
+    private int accept;
     private List<String> tags;
 }

@@ -63,10 +63,10 @@ public class ChallengeDao {
                 "           when ch.cycle = '7' then concat('1주일에 ', ch.count, '회')\n" +
                 "           when ch.cycle = '14' then concat('2주일에 ', ch.count, '회')\n" +
                 "               end as certification,\n" +
-                "       waiting\n" +
+                "       accept\n" +
                 "from Category c, Challenge ch\n" +
                 "left join (\n" +
-                "    select challengeIdx, count(userIdx) as waiting\n" +
+                "    select challengeIdx, count(userIdx) as accept\n" +
                 "    from ChallengeWaiting\n" +
                 "    where status = 1 and accept = 1\n" +
                 "    group by challengeIdx\n" +
@@ -75,13 +75,14 @@ public class ChallengeDao {
                 "and ch.status = 1\n" +
                 "and ch.categoryIdx = ?\n" +
                 "and ch.startDate > now()\n" +
-                "and waiting > 0\n" +
-                "order by waiting desc limit 4; ";
+                "and accept < 6\n" +
+                "and accept > 0\n" +
+                "order by accept desc, title limit 4;";
         String getTagsQuery = "select tag\n" +
                 "from ChallengeTag t, Challenge ch\n" +
                 "where ch.challengeIdx = t.challengeIdx\n" +
                 "and ch.status = 1\n" +
-                "and ch.challengeIdx = ?;";
+                "and ch.challengeIdx = ? order by tag";
         int getChallengeHomeParams = categoryIdx;
 
         return this.jdbcTemplate.query(getChallengeHomeQuery,
@@ -91,7 +92,7 @@ public class ChallengeDao {
                         rs.getString("title"),
                         rs.getString("startDate"),
                         rs.getString("certification"),
-                        rs.getInt("waiting"),
+                        rs.getInt("accept"),
                         this.jdbcTemplate.query(getTagsQuery, (rs1, rowNum1) -> new String(
                                 rs1.getString("tag")
                         ), rs.getInt("challengeIdx"))
