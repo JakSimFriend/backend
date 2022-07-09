@@ -277,4 +277,10 @@ public class ChallengeDao {
         String checkUserQuery = "select exists(select userIdx from User where userIdx = ? and status = 1)";
         return this.jdbcTemplate.queryForObject(checkUserQuery, int.class, userIdx);
     }
+
+    public int checkProceeding(int challengeIdx) {
+        String checkProceedingQuery = "select exists(select challengeIdx from Challenge where challengeIdx = ? and status = 1 and proceeding = 1)";
+        int checkChallengeParams = challengeIdx;
+        return this.jdbcTemplate.queryForObject(checkProceedingQuery, int.class, checkChallengeParams);
+    }
 }

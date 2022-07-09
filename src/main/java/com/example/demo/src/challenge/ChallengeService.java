@@ -50,12 +50,12 @@ public class ChallengeService {
     }
 
     public void deleteChallenge(int challengeIdx, int userIdx) throws BaseException {
-        try{
-            int check = challengeDao.checkChallenge(challengeIdx);
-            if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
-        } catch(Exception exception){
-            throw new BaseException(NOT_EXIST_CHALLENGE);
-        }
+        int check = challengeDao.checkChallenge(challengeIdx);
+        if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        int proceeding = challengeDao.checkProceeding(challengeIdx);
+        if(proceeding == 1) throw new BaseException(PROCEEDING_CHALLENGE);
+
         try{
             int result = challengeDao.deleteChallenge(challengeIdx, userIdx);
             if(result == 0) throw new BaseException(DELETE_FAIL_CHALLENGE);
