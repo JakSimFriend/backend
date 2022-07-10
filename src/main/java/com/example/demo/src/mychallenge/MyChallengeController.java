@@ -119,4 +119,27 @@ public class MyChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     *  진행 화면 조회 API
+     * [GET] /my-challenges/:userIdx/application
+     * @return BaseResponse<List<GetMyChallengeApplication>>
+     */
+    //Query String
+    @ResponseBody
+    @GetMapping("/{userIdx}/application")
+    public BaseResponse<List<GetMyChallengeApplication>> getMyChallengeApplication(@PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetMyChallengeApplication> getMyChallengeApplication = myChallengeProvider.getMyChallengeApplication(userIdx);
+            if(getMyChallengeApplication.get(0).getRecruitments().size() == 0 && getMyChallengeApplication.get(0).getApplyings().size() == 0){return new BaseResponse<>(NOT_EXIST_SEARCH);}
+            return new BaseResponse<>(getMyChallengeApplication);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

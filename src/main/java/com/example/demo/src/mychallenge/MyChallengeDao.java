@@ -324,4 +324,84 @@ public class MyChallengeDao {
                 ), challengeIdx);
     }
 
+    public List<GetMyChallengeApplication> getMyChallengeApplication(int userIdx) {
+        String getCountQuery = "select count(challengeIdx) recruitmentCount,\n" +
+                "       (select count(challengeIdx) from ChallengeWaiting where c.proceeding = 0 and userIdx = ? and status = 1 and c.startDate > now() and userIdx != founderIdx) applyingCount\n" +
+                "from Challenge c\n" +
+                "where c.status = 1\n" +
+                "and startDate > now()\n" +
+                "and proceeding = 0\n" +
+                "and c.userIdx = ?;";
+        String getRecruitQuery = "select c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       concat('D', DATEDIFF(now(), startDate)) as remainingDay,\n" +
+                "       ifnull(memberCount, 0) memberCount,\n" +
+                "       (select count(w.userIdx) from ChallengeWaiting w where c.challengeIdx = w.challengeIdx and accept = 0 and status = 1) waiting\n" +
+                "from Challenge c\n" +
+                "left join (\n" +
+                "    select challengeIdx, count(userIdx) as memberCount\n" +
+                "    from Member\n" +
+                "    where status = 1\n" +
+                "    group by challengeIdx\n" +
+                "    ) as x on c.challengeIdx = x.challengeIdx\n" +
+                "where c.userIdx = ?\n" +
+                "and c.status = 1\n" +
+                "and c.proceeding = 0\n" +
+                "and startDate > now()\n" +
+                "order by startDate, title;";
+        String getApplyingQuery = "select w.accept acceptStatus,\n" +
+                "       c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       concat('D', DATEDIFF(now(), startDate)) as remainingDay,\n" +
+                "       case\n" +
+                "           when c.cycle = '1' then concat('하루에 ', c.count, '회')\n" +
+                "           when c.cycle = '7' then concat('1주일에 ', c.count, '회')\n" +
+                "           when c.cycle = '14' then concat('2주일에 ', c.count, '회')\n" +
+                "               end as certification,\n" +
+                "       ifnull(memberCount, 0) memberCount,\n" +
+                "       ifnull((4 - memberCount), 4) needCount\n" +
+                "from ChallengeWaiting w, Challenge c\n" +
+                "left join (\n" +
+                "    select challengeIdx, count(userIdx) as memberCount\n" +
+                "    from Member m\n" +
+                "    where status = 1\n" +
+                "    group by challengeIdx\n" +
+                "    ) as x on c.challengeIdx = x.challengeIdx\n" +
+                "where c.status = 1\n" +
+                "and w.challengeIdx = c.challengeIdx\n" +
+                "and w.userIdx = ?\n" +
+                "and c.startDate > now()\n" +
+                "and proceeding = 0\n" +
+                "and w.userIdx != w.founderIdx\n" +
+                "order by startDate, title;";
+        String getTagsQuery = "select tag\n" +
+                "from ChallengeTag t, Challenge ch\n" +
+                "where ch.challengeIdx = t.challengeIdx\n" +
+                "and ch.status = 1\n" +
+                "and ch.challengeIdx = ? order by tag;";
+
+        return this.jdbcTemplate.query(getCountQuery,
+                (rs, rowNum) -> new GetMyChallengeApplication(
+                        rs.getInt("recruitmentCount"),
+                        this.jdbcTemplate.query(getRecruitQuery, (rs1, rowNum1) -> new GetRecruitment(
+                                rs1.getInt("challengeIdx"),
+                                rs1.getString("title"),
+                                rs1.getString("remainingDay"),
+                                rs1.getInt("memberCount"),
+                                rs1.getInt("waiting")
+                        ), userIdx),
+                        rs.getInt("applyingCount"),
+                        this.jdbcTemplate.query(getApplyingQuery, (rs1, rowNum1) -> new GetApplying(
+                                rs1.getInt("acceptStatus"),
+                                rs1.getInt("challengeIdx"),
+                                rs1.getString("title"),
+                                this.jdbcTemplate.query(getTagsQuery, (rs2, rowNum2) -> new String(rs2.getString("tag")), rs1.getInt("challengeIdx")),
+                                rs1.getString("remainingDay"),
+                                rs1.getString("certification"),
+                                rs1.getInt("memberCount"),
+                                rs1.getInt("needCount")
+                        ), userIdx)
+                ), userIdx, userIdx);
+
+    }
 }

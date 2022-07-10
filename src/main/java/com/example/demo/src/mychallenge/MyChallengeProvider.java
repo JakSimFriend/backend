@@ -64,4 +64,14 @@ public class MyChallengeProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetMyChallengeApplication> getMyChallengeApplication(int userIdx) throws BaseException {
+        try {
+            List<GetMyChallengeApplication> getMyChallengeApplication = myChallengeDao.getMyChallengeApplication(userIdx);
+            return getMyChallengeApplication;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
