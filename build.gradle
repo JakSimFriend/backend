@@ -72,6 +72,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
+
 }
 
 test {

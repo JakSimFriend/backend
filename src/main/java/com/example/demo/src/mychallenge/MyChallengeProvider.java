@@ -74,4 +74,19 @@ public class MyChallengeProvider {
         }
     }
 
+    public List<GetRecruitmentInfo> getRecruitmentInfo(int challengeIdx, int userIdx) throws BaseException {
+        int checkChallenge = myChallengeDao.checkChallenge(challengeIdx);
+        if(checkChallenge == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        int founder = myChallengeDao.checkFounder(challengeIdx, userIdx);
+        if(founder == 0) throw new BaseException(NOT_EXIST_FOUNDER);
+
+        try {
+            List<GetRecruitmentInfo> getRecruitmentInfo = myChallengeDao.getRecruitmentInfo(challengeIdx);
+            return getRecruitmentInfo;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

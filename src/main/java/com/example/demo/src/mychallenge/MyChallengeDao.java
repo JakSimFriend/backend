@@ -404,4 +404,81 @@ public class MyChallengeDao {
                 ), userIdx, userIdx);
 
     }
+
+    public List<GetRecruitmentInfo> getRecruitmentInfo(int challengeIdx) {
+        String getRecruitInfoQuery = "select c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       c.startDate,\n" +
+                "       datediff(startDate, curdate()) remainingDay,\n" +
+                "       concat(DATE_FORMAT(c.startDate, '%c월 %e일'), '~', DATE_FORMAT(ADDDATE(c.startDate, 14), '%c월 %e일')) as date,\n" +
+                "       c.limited,\n" +
+                "       case\n" +
+                "           when c.cycle = '1' then concat('하루 ', c.count, '회')\n" +
+                "           when c.cycle = '7' then concat('1주일 ', c.count, '회')\n" +
+                "           when c.cycle = '14' then concat('2주일 ', c.count, '회')\n" +
+                "               end as certification,\n" +
+                "       date_format(c.deadline, '%H시 %m분 마감') deadline,\n" +
+                "       (select count(w.userIdx) from ChallengeWaiting w where c.challengeIdx = w.challengeIdx and accept = 0 and status = 1) waiting,\n" +
+                "       (select count(userIdx) from Member m where c.challengeIdx = m.challengeIdx and status = 1) memberCount\n" +
+                "from Challenge c\n" +
+                "where c.status = 1\n" +
+                "and c.proceeding = 0\n" +
+                "and c.challengeIdx = ?\n" +
+                "and startDate > now();";
+        String getWaitingQuery = "select u.userIdx,\n" +
+                "       (select avg(achievement) from AchievementRate a where u.userIdx = a.userIdx) as achievement,\n" +
+                "       u.nickName,\n" +
+                "       u.profile,\n" +
+                "       u.promise\n" +
+                "from User u, ChallengeWaiting w\n" +
+                "where accept = 0\n" +
+                "  and u.userIdx = w.userIdx\n" +
+                "  and w.status = 1\n" +
+                "and challengeIdx = ?\n" +
+                "order by w.createAt;";
+        String getMemberQuery = "select u.userIdx,\n" +
+                "       u.nickName,\n" +
+                "       u.profile,\n" +
+                "       u.promise\n" +
+                "from User u, Member m\n" +
+                "where u.userIdx = m.userIdx\n" +
+                "and m.status = 1\n" +
+                "and m.challengeIdx = ?\n" +
+                "order by nickName;";
+
+        return this.jdbcTemplate.query(getRecruitInfoQuery,
+                (rs, rowNum) -> new GetRecruitmentInfo(
+                        rs.getInt("challengeIdx"),
+                        rs.getString("title"),
+                        rs.getDate("startDate"),
+                        rs.getInt("remainingDay"),
+                        rs.getString("date"),
+                        rs.getInt("limited"),
+                        rs.getString("certification"),
+                        rs.getString("deadline"),
+                        rs.getInt("waiting"),
+                        this.jdbcTemplate.query(getWaitingQuery, (rs1, rowNum1) -> new GetWaiting(
+                                rs1.getInt("userIdx"),
+                                rs1.getInt("achievement"),
+                                rs1.getString("nickName"),
+                                rs1.getString("profile"),
+                                rs1.getString("promise")
+                        ), challengeIdx),
+                        rs.getInt("memberCount"),
+                        this.jdbcTemplate.query(getMemberQuery, (rs1, rowNum1) -> new GetMemberInfo(
+                                rs1.getInt("userIdx"),
+                                rs1.getString("nickName"),
+                                rs1.getString("profile"),
+                                rs1.getString("promise")
+                                ), challengeIdx)
+                ), challengeIdx);
+
+    }
+
+    public int checkFounder(int challengeIdx, int userIdx){
+        String checkFounderQuery = "select exists(select userIdx from Challenge where challengeIdx = ? and userIdx = ?)";
+        return this.jdbcTemplate.queryForObject(checkFounderQuery, int.class, challengeIdx, userIdx);
+    }
+
+
 }
