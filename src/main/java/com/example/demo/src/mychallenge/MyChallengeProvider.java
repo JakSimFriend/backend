@@ -89,4 +89,13 @@ public class MyChallengeProvider {
         }
     }
 
+    public List<GetMyChallengeHistory> getMyChallengeHistory(int userIdx) throws BaseException {
+        try {
+            List<GetMyChallengeHistory> getMyChallengeHistory = myChallengeDao.getMyChallengeHistory(userIdx);
+            return getMyChallengeHistory;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

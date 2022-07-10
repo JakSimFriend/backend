@@ -480,5 +480,54 @@ public class MyChallengeDao {
         return this.jdbcTemplate.queryForObject(checkFounderQuery, int.class, challengeIdx, userIdx);
     }
 
+    public List<GetMyChallengeHistory> getMyChallengeHistory(int userIdx) {
+        String getMyChallengeHistoryQuery = "select date_format(startDate, '%Y') year,\n" +
+                "       count(c.challengeIdx) count\n" +
+                "from Member m, Challenge c\n" +
+                "where m.userIdx\n" +
+                "and m.challengeIdx = c.challengeIdx\n" +
+                "and c.status = 1\n" +
+                "and proceeding = 2\n" +
+                "and m.userIdx = ?\n" +
+                "group by date_format(startDate, '%Y')\n" +
+                "order by year desc ;";
+        String getHistoryQuery = "select c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       ca.categoryName,\n" +
+                "       date_add(startDate, INTERVAL 14 DAY) endDate,\n" +
+                "       case\n" +
+                "           when c.cycle = '1' then round((nowCount/14) * 100)\n" +
+                "           when c.cycle = '7' then round((nowCount/(count * 2)) * 100)\n" +
+                "           when c.cycle = '14' then round((nowCount/count) * 100)\n" +
+                "               end as percent,\n" +
+                "       (exists(select userIdx from ExperienceRate e where e.challengeIdx = c.challengeIdx and m.userIdx = e.userIdx)) rewardStatus\n" +
+                "from Category ca, Challenge c, Member m\n" +
+                "left join ( select userIdx, challengeIdx, count(certificationIdx) nowCount\n" +
+                "    from Certification ce\n" +
+                "    where status = 1\n" +
+                "    group by challengeIdx, userIdx\n" +
+                "    ) as x on x.challengeIdx = m.challengeIdx and m.userIdx = x.userIdx\n" +
+                "where ca.categoryIdx = c.categoryIdx\n" +
+                "and c.challengeIdx = m.challengeIdx\n" +
+                "and c.status = 1\n" +
+                "and proceeding = 2\n" +
+                "and m.userIdx = ?\n" +
+                "and date_format(startDate, '%Y') = ?\n" +
+                "order by endDate desc, title;";
+
+        return this.jdbcTemplate.query(getMyChallengeHistoryQuery,
+                (rs, rowNum) -> new GetMyChallengeHistory(
+                        rs.getInt("year"),
+                        rs.getInt("count"),
+                        this.jdbcTemplate.query(getHistoryQuery, (rs1, rowNum1) -> new GetHistory(
+                                rs1.getInt("challengeIdx"),
+                                rs1.getString("title"),
+                                rs1.getString("categoryName"),
+                                rs1.getDate("endDate"),
+                                rs1.getInt("percent"),
+                                rs1.getInt("rewardStatus")
+                                ), userIdx, rs.getInt("year"))
+                ), userIdx);
+    }
 
 }
