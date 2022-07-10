@@ -20,18 +20,26 @@ public class MyChallengeDao {
     }
 
     public List<GetMyChallengeProgress> getMyChallengeProgress(int userIdx) {
-        String getCountQuery = "select count(case when proceeding = 1 then 1 end) as proceedingCount,\n" +
-                "       count(case when proceeding = 0 then 1 end) as beforeCount\n" +
+        String getCountQuery = "select count(case when startDate < now() and proceeding = 1 then 1 end) as proceedingCount,\n" +
+                "       count(case when startDate > now() and acceptCount > 3 then 1 end) as beforeCount\n" +
                 "from Member m, Challenge c\n" +
+                "left join (\n" +
+                "    select challengeIdx, count(userIdx) as acceptCount\n" +
+                "    from Member m\n" +
+                "    where status = 1\n" +
+                "    group by challengeIdx\n" +
+                "    ) as x on c.challengeIdx = x.challengeIdx\n" +
                 "where m.userIdx = ?\n" +
                 "and c.status = 1\n" +
                 "and m.challengeIdx = c.challengeIdx;";
-        String getTitleQuery = "select c.challengeIdx, c.title, exists(select userIdx from Certification ce where ce.status and (DATEDIFF(now(), createAt)) = 0 and ce.challengeIdx = m.challengeIdx) as certification\n" +
+        String getTitleQuery = "select c.challengeIdx, c.title, exists(select userIdx from Certification ce where ce.status and (DATEDIFF(now(), createAt)) = 0 and ce.challengeIdx = m.challengeIdx) as certiciation\n" +
                 "from Challenge c, Member m\n" +
                 "where c.challengeIdx = m.challengeIdx\n" +
                 "and c.status = 1\n" +
                 "and proceeding = 1\n" +
-                "and m.userIdx = ?;";
+                "and startDate < now()\n" +
+                "and m.userIdx = ?\n" +
+                "order by startDate, title;";
         String getMemberQuery = "select u.userIdx,\n" +
                 "       u.profile,\n" +
                 "       u.nickName,\n" +
@@ -50,7 +58,7 @@ public class MyChallengeDao {
                 "and c.challengeIdx = m.challengeIdx\n" +
                 "and u.userIdx = m.userIdx\n" +
                 "and m.challengeIdx = ?\n" +
-                "order by percent desc;";
+                "order by percent desc, nickName;";
         String getBeforeQuery = "select ch.challengeIdx,\n" +
                 "       c.categoryName,\n" +
                 "       ch.title,\n" +
@@ -72,14 +80,14 @@ public class MyChallengeDao {
                 "and ch.challengeIdx = m.challengeIdx\n" +
                 "and ch.status = 1\n" +
                 "and ch.startDate > now()\n" +
-                "and proceeding = 0\n" +
+                "and accept > 3\n" +
                 "and m.userIdx = ?\n" +
-                "order by remainingDay;";
+                "order by remainingDay, title;";
         String getTagsQuery = "select tag\n" +
                 "from ChallengeTag t, Challenge ch\n" +
                 "where ch.challengeIdx = t.challengeIdx\n" +
                 "and ch.status = 1\n" +
-                "and ch.challengeIdx = ?;";
+                "and ch.challengeIdx = ? order by tag;";
 
         return this.jdbcTemplate.query(getCountQuery,
                 (rs, rowNum) -> new GetMyChallengeProgress(
