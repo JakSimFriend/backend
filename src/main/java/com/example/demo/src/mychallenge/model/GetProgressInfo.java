@@ -19,6 +19,7 @@ public class GetProgressInfo {
     private int remainingDay;
     private int remainingCount;
     private String date;
+    private int limited;
     private String certificationInfo;
     private String deadline;
     private int memberCount;

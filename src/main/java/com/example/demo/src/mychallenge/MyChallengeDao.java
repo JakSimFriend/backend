@@ -32,7 +32,7 @@ public class MyChallengeDao {
                 "where m.userIdx = ?\n" +
                 "and c.status = 1\n" +
                 "and m.challengeIdx = c.challengeIdx;";
-        String getTitleQuery = "select c.challengeIdx, c.title, exists(select userIdx from Certification ce where ce.status and (DATEDIFF(now(), createAt)) = 0 and ce.challengeIdx = m.challengeIdx) as certiciation\n" +
+        String getTitleQuery = "select c.challengeIdx, c.title, exists(select userIdx from Certification ce where ce.status and (DATEDIFF(now(), createAt)) = 0 and ce.challengeIdx = m.challengeIdx) as certification\n" +
                 "from Challenge c, Member m\n" +
                 "where c.challengeIdx = m.challengeIdx\n" +
                 "and c.status = 1\n" +
@@ -201,6 +201,7 @@ public class MyChallengeDao {
                 "           when c.cycle = '14' then count - nowCount\n" +
                 "           end as remainingCount,\n" +
                 "       concat(DATE_FORMAT(c.startDate, '%c월 %e일'), ' ~ ', DATE_FORMAT(ADDDATE(c.startDate, 14), '%c월 %e일')) as date,\n" +
+                "       c.limited,\n" +
                 "       case\n" +
                 "           when c.cycle = '1' then concat('하루 ', c.count, '회')\n" +
                 "           when c.cycle = '7' then concat('1주일 ', c.count, '회')\n" +
@@ -259,6 +260,7 @@ public class MyChallengeDao {
                         rs.getInt("remainingDay"),
                         rs.getInt("remainingCount"),
                         rs.getString("date"),
+                        rs.getInt("limited"),
                         rs.getString("certificationInfo"),
                         rs.getString("deadline"),
                         rs.getInt("memberCount"),
