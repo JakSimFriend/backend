@@ -143,6 +143,8 @@ public class UserDao {
         String postUserInfoQuery = "update User set birth = ? where userIdx = ?;";
         Object[] postUserInfoParams = new Object[]{postBirth.getBirth(), postBirth.getUserIdx()};
 
+        addUserPoint(postBirth.getUserIdx());
+
         return this.jdbcTemplate.update(postUserInfoQuery, postUserInfoParams);
     }
 
@@ -173,6 +175,13 @@ public class UserDao {
 
     public int checkUser(int userIdx) {
         String checkUserQuery = "select exists(select userIdx from User where userIdx = ? and status = 1);";
-        return this.jdbcTemplate.queryForObject(checkUserQuery, int.class, userIdx);}
+        return this.jdbcTemplate.queryForObject(checkUserQuery, int.class, userIdx);
+    }
+
+    public int addUserPoint(int userIdx){
+        String addUserPointQuery = "insert into Point(point, userIdx, categoryIdx) values (1000, ?, 6);";
+        Object[] addUserPointParams = new Object[]{userIdx};
+        return this.jdbcTemplate.update(addUserPointQuery, addUserPointParams);
+    }
 
 }
