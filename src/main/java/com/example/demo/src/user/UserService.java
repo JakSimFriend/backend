@@ -264,6 +264,17 @@ public class UserService {
         }
     }
 
+    public void createBirth(PostBirth postBirth) throws BaseException {
+        try {
+            int result = userDao.createBirth(postBirth);
+            if (result == 0) {
+                throw new BaseException(POST_FAIL_BIRTH);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     public void createRecommender(PostUserInfo postUserInfo) throws BaseException {
         try {
             int result = userDao.createRecommender(postUserInfo);

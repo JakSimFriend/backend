@@ -190,6 +190,35 @@ public class UserController {
     }
 
     /**
+     * 생일 등록 API
+     * [POST] /users/birth
+     *
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PostMapping("/birth")
+    public BaseResponse<String> createBirth(@RequestBody PostBirth postBirth) {
+        try {
+
+            if (postBirth.getBirth() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_BIRTH);
+            }
+
+            int userIdx = postBirth.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            userService.createBirth(postBirth);
+            String result = "생일 등록에 성공하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
      * 회원 탈퇴 API
      * [PATCH] /users/:idx/delete
      * @return BaseResponse<String>

@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_NICKNAME(false, 2019, "닉네임을 입력해주세요."),
     POST_USERS_INVALID_NICKNAME(false, 2020, "닉네임 형식을 확인해주세요."),
     POST_USERS_INVALID_RECOMMENDER(false, 2021, "추천인을 확인해주세요."),
+    POST_USERS_EMPTY_BIRTH(false, 2022, "생일을 입력해주세요."),
 
     // [POST] /challenges
     POST_CHALLENGES_EMPTY_TITLE(false, 2100, "챌린지 제목을 입력해주세요."),
@@ -59,7 +60,6 @@ public enum BaseResponseStatus {
 
     GET_SEARCH_EMPTY_KEYWORD(false, 2202, "검색어를 입력해주세요."),
     GET_SEARCH_INVALID_KEYWORD(false, 2203, "검색어 형식을 확인해주세요"),
-
 
     /**
      * 3000 : Response 오류
@@ -102,7 +102,7 @@ public enum BaseResponseStatus {
     CLOSED_CHALLENGE(false, 3038, "마감된 챌린지입니다."),
     PROCEEDING_CHALLENGE_JOIN(false, 3039, "진행 중인 챌린지는 신청할 수 없습니다."),
 
-
+    POST_FAIL_BIRTH(false, 3040, "생일 등록에 실패하였습니다."),
     /**
      * 4000 : Database, Server 오류
      */

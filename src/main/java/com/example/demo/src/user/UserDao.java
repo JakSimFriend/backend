@@ -139,6 +139,13 @@ public class UserDao {
         return this.jdbcTemplate.update(postUserInfoQuery, postUserInfoParams);
     }
 
+    public int createBirth(PostBirth postBirth){
+        String postUserInfoQuery = "update User set birth = ? where userIdx = ?;";
+        Object[] postUserInfoParams = new Object[]{postBirth.getBirth(), postBirth.getUserIdx()};
+
+        return this.jdbcTemplate.update(postUserInfoQuery, postUserInfoParams);
+    }
+
     public int createRecommender(PostUserInfo postUserInfo) {
         String createRecommenderQuery = "insert into Recommend (recommenderIdx, userIdx) VALUES (?,?)";
         Object[] createRecommenderParams = new Object[]{postUserInfo.getRecommenderIdx(), postUserInfo.getUserIdx()};
