@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.example.demo.config.BaseResponseStatus.NOTHING_NOTIFICATION;
 
 @RestController
 @RequestMapping("/alerts")
@@ -47,6 +48,7 @@ public class NotificationController {
             }
 
             List<GetHomeNotification> getHomeNotification = notificationProvider.getHomeNotification(userIdx);
+            if(getHomeNotification.size() == 0) throw new BaseException(NOTHING_NOTIFICATION);
             return new BaseResponse<>(getHomeNotification);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
