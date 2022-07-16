@@ -53,4 +53,16 @@ public class ProfileService {
             throw new BaseException(POST_FAIL_PROFILE);
         }
     }
+
+    public void getReward(int userIdx) throws BaseException {
+        int check = profileDao.checkUser(userIdx);
+        if(check == 0) throw new BaseException(NOT_EXIST_USER);
+
+        try {
+            int result = profileDao.getReward(userIdx);
+            if (result == 0) {throw new BaseException(GET_FAIL_REWARD);}
+        } catch (Exception exception) {
+            throw new BaseException(GET_FAIL_REWARD);
+        }
+    }
 }

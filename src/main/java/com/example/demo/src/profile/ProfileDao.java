@@ -85,4 +85,14 @@ public class ProfileDao {
         return this.jdbcTemplate.update(modifyProfileImageQuery, modifyProfileImageParams);
     }
 
+    public int getReward(int userIdx){
+        String getRewardQuery = "insert into Point(point, userIdx, categoryIdx) values (500, ?, 2);";
+        Object[] getRewardParams = new Object[]{userIdx};
+        return this.jdbcTemplate.update(getRewardQuery, getRewardParams);
+    }
+
+    public int checkUser(int userIdx) {
+        String checkUserQuery = "select exists(select userIdx from User where userIdx = ? and status = 1);";
+        return this.jdbcTemplate.queryForObject(checkUserQuery, int.class, userIdx);
+    }
 }

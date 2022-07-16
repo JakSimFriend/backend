@@ -137,4 +137,26 @@ public class ProfileController {
         }
     }
 
+    /**
+     *  광고 보상 받기 API
+     * [PATCH] /profiles/:idx/reward
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{idx}/reward")
+    public BaseResponse<String> getReward(@PathVariable("idx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            profileService.getReward(userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
