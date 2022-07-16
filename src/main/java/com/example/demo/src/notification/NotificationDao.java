@@ -42,4 +42,23 @@ public class NotificationDao {
                         ), getNotificationParams, rs.getString("date"))
                 ), getNotificationParams);
     }
+
+    public int deleteNotification(int alertIdx, int userIdx){
+        String deleteNotificationQuery = "update Alert set status = 0 where alertIdx = ? and userIdx = ?; ";
+        Object[] deleteNotificationParams = new Object[]{alertIdx, userIdx};
+        return this.jdbcTemplate.update(deleteNotificationQuery, deleteNotificationParams);
+    }
+
+    public int checkNotification(int alertIdx) {
+        String checkNotificationQuery = "select exists(select alertIdx from Alert where alertIdx = ? and status = 1);";
+        int checkNotificationParams = alertIdx;
+        return this.jdbcTemplate.queryForObject(checkNotificationQuery, int.class, checkNotificationParams);
+    }
+
+    public int checkUser(int alertIdx, int userIdx) {
+        String checkNotificationQuery = "select exists(select alertIdx from Alert where alertIdx = ? and userIdx = ? and status = 1);";
+        Object[] checkNotificationParams = new Object[]{alertIdx, userIdx};
+        return this.jdbcTemplate.queryForObject(checkNotificationQuery, int.class, checkNotificationParams);
+    }
+
 }

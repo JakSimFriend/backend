@@ -14,7 +14,7 @@ import java.util.List;
 import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/alerts")
 public class NotificationController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -49,6 +49,28 @@ public class NotificationController {
             List<GetHomeNotification> getHomeNotification = notificationProvider.getHomeNotification(userIdx);
             return new BaseResponse<>(getHomeNotification);
         } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     *  특정 홈 알림 삭제 API
+     * [PATCH] /alerts/:idx/:userIdx/delete
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{idx}/{userIdx}/delete")
+    public BaseResponse<String> deleteNotification(@PathVariable("idx") int alertIdx, @PathVariable("userIdx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            notificationService.deleteNotification(alertIdx, userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

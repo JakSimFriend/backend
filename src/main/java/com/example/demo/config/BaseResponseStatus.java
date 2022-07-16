@@ -103,6 +103,11 @@ public enum BaseResponseStatus {
     PROCEEDING_CHALLENGE_JOIN(false, 3039, "진행 중인 챌린지는 신청할 수 없습니다."),
 
     POST_FAIL_BIRTH(false, 3040, "생일 등록에 실패하였습니다."),
+
+    NOT_EXIST_NOTIFICATION(false, 3041, "존재하지 않는 알림입니다."),
+    NOTHING_NOTIFICATION(false, 3042, "알림이 존재하지 않습니다."),
+    NO_ACCESS_USER(false, 3043, "접근이 불가능한 사용자입니다."),
+
     /**
      * 4000 : Database, Server 오류
      */
@@ -124,6 +129,7 @@ public enum BaseResponseStatus {
     CERTIFICATION_FAIL(false, 4019, "챌린지 인증에 실패하였습니다."),
     DELETE_FAIL_USER(false, 4020, "탈퇴에 실패하였습니다."),
 
+    DELETE_FAIL_NOTIFICATION(false, 4021, "알림 삭제에 실패하였습니다."),
 
     // 5000 : 기타 오류
     WRONG_URL(false, 5001, "잘못된 URL 정보입니다."),
