@@ -130,6 +130,8 @@ public enum BaseResponseStatus {
     DELETE_FAIL_USER(false, 4020, "탈퇴에 실패하였습니다."),
 
     DELETE_FAIL_NOTIFICATION(false, 4021, "알림 삭제에 실패하였습니다."),
+    DELETE_FAIL_ALL(false, 4022, "알림 전체 삭제에 실패하였습니다."),
+
 
     // 5000 : 기타 오류
     WRONG_URL(false, 5001, "잘못된 URL 정보입니다."),

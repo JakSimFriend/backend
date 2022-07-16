@@ -76,4 +76,26 @@ public class NotificationController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     *  홈 알림 전체 삭제 API
+     * [PATCH] /alerts/:userIdx/delete-all
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/delete-all")
+    public BaseResponse<String> deleteNotificationAll(@PathVariable("userIdx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            notificationService.deleteNotificationAll(userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

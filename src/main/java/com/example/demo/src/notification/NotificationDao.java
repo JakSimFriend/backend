@@ -61,4 +61,9 @@ public class NotificationDao {
         return this.jdbcTemplate.queryForObject(checkNotificationQuery, int.class, checkNotificationParams);
     }
 
+    public int deleteNotificationAll(int userIdx){
+        String deleteNotificationQuery = "update Alert set status = 0 where userIdx = ?; ";
+        Object[] deleteNotificationParams = new Object[]{userIdx};
+        return this.jdbcTemplate.update(deleteNotificationQuery, deleteNotificationParams);
+    }
 }

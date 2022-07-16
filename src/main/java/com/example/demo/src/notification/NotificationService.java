@@ -42,4 +42,13 @@ public class NotificationService {
         }
     }
 
+    public void deleteNotificationAll(int userIdx) throws BaseException {
+        try{
+            int result = notificationDao.deleteNotificationAll(userIdx);
+            if(result == 0) throw new BaseException(DELETE_FAIL_ALL);
+        } catch(Exception exception){
+            throw new BaseException(DELETE_FAIL_ALL);
+        }
+    }
+
 }
