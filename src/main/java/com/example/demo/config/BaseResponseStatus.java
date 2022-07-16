@@ -107,6 +107,8 @@ public enum BaseResponseStatus {
     NOT_EXIST_NOTIFICATION(false, 3041, "존재하지 않는 알림입니다."),
     NOTHING_NOTIFICATION(false, 3042, "알림이 존재하지 않습니다."),
     NO_ACCESS_USER(false, 3043, "접근이 불가능한 사용자입니다."),
+    EXITS_SETTING(false, 3044, "이미 설정이 되어있습니다."),
+    EXITS_CANCEL(false, 3045, "이미 해제가 되어있습니다."),
 
     /**
      * 4000 : Database, Server 오류
@@ -133,6 +135,8 @@ public enum BaseResponseStatus {
     DELETE_FAIL_ALL(false, 4022, "알림 전체 삭제에 실패하였습니다."),
 
     GET_FAIL_REWARD(false, 4023, "광고 보상 받기에 실패하였습니다."),
+    SETTING_FAIL_ALERT(false, 4024, "알림 설정에 실패하였습니다."),
+    SETTING_FAIL_ALERT_CANCEL(false, 4025, "알림 해제에 실패하였습니다."),
 
 
     // 5000 : 기타 오류
