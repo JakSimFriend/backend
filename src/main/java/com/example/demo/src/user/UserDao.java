@@ -115,8 +115,9 @@ public class UserDao {
         this.jdbcTemplate.update(postEmailQuery, postEmailParams);
 
         String lastInserIdQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
-
+        int userIdx = this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+        addUserPoint(userIdx);
+        return userIdx;
     }
 
     public int checkNickName(String nickName) {
@@ -142,8 +143,6 @@ public class UserDao {
     public int createBirth(PostBirth postBirth){
         String postUserInfoQuery = "update User set birth = ? where userIdx = ?;";
         Object[] postUserInfoParams = new Object[]{postBirth.getBirth(), postBirth.getUserIdx()};
-
-        addUserPoint(postBirth.getUserIdx());
 
         return this.jdbcTemplate.update(postUserInfoQuery, postUserInfoParams);
     }
