@@ -74,6 +74,8 @@ dependencies {
 
     implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+
 }
 
 test {
