@@ -116,7 +116,7 @@ public class SearchDao {
         String getEndQuery = "select c.challengeIdx,\n" +
                 "       c.title,\n" +
                 "       ca.categoryName,\n" +
-                "       DATE_FORMAT(c.startDate, '종료') as startDate,\n" +
+                "       DATE_FORMAT(c.startDate, '종료') as endStatus,\n" +
                 "       case\n" +
                 "           when c.cycle = '1' then concat('하루에 ', c.count, '회')\n" +
                 "           when c.cycle = '7' then concat('1주일에 ', c.count, '회')\n" +
