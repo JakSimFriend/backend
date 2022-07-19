@@ -425,8 +425,9 @@ public class MyChallengeDao {
                 "and c.proceeding = 0\n" +
                 "and c.challengeIdx = ?\n" +
                 "and startDate > now();";
-        String getWaitingQuery = "select u.userIdx,\n" +
-                "       (select avg(achievement) from AchievementRate a where u.userIdx = a.userIdx) as achievement,\n" +
+        String getWaitingQuery = "select waitingIdx,\n" +
+                "       u.userIdx,\n" +
+                "       ifnull(concat('달성률 ', floor((select avg(achievement) from AchievementRate a where u.userIdx = a.userIdx)), '%'), '달성률 정보없음') as achievement,\n" +
                 "       u.nickName,\n" +
                 "       u.profile,\n" +
                 "       u.promise\n" +
@@ -458,8 +459,9 @@ public class MyChallengeDao {
                         rs.getString("deadline"),
                         rs.getInt("waiting"),
                         this.jdbcTemplate.query(getWaitingQuery, (rs1, rowNum1) -> new GetWaiting(
+                                rs1.getInt("waitingIdx"),
                                 rs1.getInt("userIdx"),
-                                rs1.getInt("achievement"),
+                                rs1.getString("achievement"),
                                 rs1.getString("nickName"),
                                 rs1.getString("profile"),
                                 rs1.getString("promise")

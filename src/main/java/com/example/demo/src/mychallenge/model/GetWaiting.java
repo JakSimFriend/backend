@@ -8,8 +8,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetWaiting {
+    private int waitingIdx;
     private int userIdx;
-    private int achievement;
+    private String achievement;
     private String nickName;
     private String profile;
     private String promise;
