@@ -184,4 +184,30 @@ public class MyChallengeController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 정보 조회 API
+     * [GET] /my-challenges/:idx/:userIdx/detail
+     *
+     * @return BaseResponse<GetDetail>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{idx}/{userIdx}/detail")
+    public BaseResponse<GetDetail> getDetail(@PathVariable("idx") int challengeIdx, @PathVariable("userIdx") int userIdx) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            GetDetail getDetail = myChallengeProvider.getDetail(challengeIdx);
+            if(getDetail == null){return new BaseResponse<>(NOT_EXIST_DETAIL);}
+            return new BaseResponse<>(getDetail);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
 }

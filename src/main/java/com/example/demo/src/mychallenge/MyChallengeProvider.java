@@ -98,4 +98,16 @@ public class MyChallengeProvider {
         }
     }
 
+    public GetDetail getDetail(int challengeIdx) throws BaseException {
+        int check = myChallengeDao.checkChallenge(challengeIdx);
+        if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        try {
+            GetDetail getDetail = myChallengeDao.getDetail(challengeIdx);
+            return getDetail;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

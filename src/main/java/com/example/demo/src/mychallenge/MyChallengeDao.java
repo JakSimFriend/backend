@@ -532,4 +532,55 @@ public class MyChallengeDao {
                 ), userIdx);
     }
 
+    public GetDetail getDetail(int challengeIdx) {
+        String getChallengeDetailQuery = "select c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       c.content,\n" +
+                "       concat(DATE_FORMAT(c.startDate, '%c월 %e일'), ' ~ ', DATE_FORMAT(ADDDATE(c.startDate, 14), '%c월 %e일')) as date,\n" +
+                "       case\n" +
+                "           when c.cycle = '1' then concat('하루에 ', c.count, '회')\n" +
+                "           when c.cycle = '7' then concat('1주일에 ', c.count, '회')\n" +
+                "           when c.cycle = '14' then concat('2주일에 ', c.count, '회')\n" +
+                "               end as certification,\n" +
+                "       date_format(c.deadline, '%H시 %m분 마감') deadline,\n" +
+                "       ifnull(accept, 0) accept,\n" +
+                "       ifnull(waiting, 0) waiting,\n" +
+                "       if(floor(avg(ifnull(ach, 0))) = 0, '달성률 정보 없음', concat('상위 ', floor(avg(ifnull(ach, 0))), '%')) tier\n" +
+                "from Member m\n" +
+                "   left join (\n" +
+                "       select a.userIdx, rank() over (order by achievement desc ) as ranking, avg(achievement) ach\n" +
+                "       from AchievementRate a where a.status = 1\n" +
+                "    ) as w on w.userIdx = m.userIdx\n" +
+                "   , Challenge c\n" +
+                "    left join (\n" +
+                "    select challengeIdx, count(userIdx) as accept\n" +
+                "    from ChallengeWaiting\n" +
+                "    where status = 1 and accept = 1\n" +
+                "    group by challengeIdx\n" +
+                "    ) as x on c.challengeIdx = x.challengeIdx\n" +
+                "left join (\n" +
+                "    select challengeIdx, count(userIdx) as waiting\n" +
+                "    from ChallengeWaiting\n" +
+                "    where status = 1 and accept = 0\n" +
+                "    group by challengeIdx\n" +
+                "    ) as y on c.challengeIdx = y.challengeIdx\n" +
+                "where c.status = 1 and c.challengeIdx = ? and c.challengeIdx = m.challengeIdx;";
+
+        return this.jdbcTemplate.queryForObject(getChallengeDetailQuery,
+                (rs, rowNum) -> new GetDetail(
+                        rs.getInt("challengeIdx"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getString("date"),
+                        rs.getString("certification"),
+                        rs.getString("deadline"),
+                        rs.getInt("accept"),
+                        rs.getInt("waiting"),
+                        rs.getString("tier")
+                ), challengeIdx
+        );
+    }
+
+
 }
+
