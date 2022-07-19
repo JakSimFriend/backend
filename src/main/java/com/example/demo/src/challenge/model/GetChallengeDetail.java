@@ -14,6 +14,7 @@ public class GetChallengeDetail {
     private int pee;
     private String date;
     private String certification;
+    private String deadline;
     private int accept;
     private int waiting;
     private String tier;
