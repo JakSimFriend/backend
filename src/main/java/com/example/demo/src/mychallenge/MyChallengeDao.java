@@ -350,6 +350,7 @@ public class MyChallengeDao {
                 "and startDate > now()\n" +
                 "order by startDate, title;";
         String getApplyingQuery = "select w.accept acceptStatus,\n" +
+                "       w.waitingIdx,\n" +
                 "       c.challengeIdx,\n" +
                 "       c.title,\n" +
                 "       concat('D', DATEDIFF(now(), startDate)) as remainingDay,\n" +
@@ -373,7 +374,7 @@ public class MyChallengeDao {
                 "and c.startDate > now()\n" +
                 "and proceeding = 0\n" +
                 "and w.userIdx != w.founderIdx\n" +
-                "order by startDate, title;";
+                "order by startDate, title;\n";
         String getTagsQuery = "select tag\n" +
                 "from ChallengeTag t, Challenge ch\n" +
                 "where ch.challengeIdx = t.challengeIdx\n" +
@@ -393,6 +394,7 @@ public class MyChallengeDao {
                         rs.getInt("applyingCount"),
                         this.jdbcTemplate.query(getApplyingQuery, (rs1, rowNum1) -> new GetApplying(
                                 rs1.getInt("acceptStatus"),
+                                rs1.getInt("waitingIdx"),
                                 rs1.getInt("challengeIdx"),
                                 rs1.getString("title"),
                                 this.jdbcTemplate.query(getTagsQuery, (rs2, rowNum2) -> new String(rs2.getString("tag")), rs1.getInt("challengeIdx")),

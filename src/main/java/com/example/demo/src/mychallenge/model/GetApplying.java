@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GetApplying {
     private int acceptStatus;
+    private int waitingIdx;
     private int challengeIdx;
     private String title;
     private List<String> tags;
