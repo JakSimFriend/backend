@@ -61,6 +61,16 @@ public enum BaseResponseStatus {
     GET_SEARCH_EMPTY_KEYWORD(false, 2202, "검색어를 입력해주세요."),
     GET_SEARCH_INVALID_KEYWORD(false, 2203, "검색어 형식을 확인해주세요"),
 
+    POST_REWARDS_EMPTY_USERIDX(false, 2204, "사용자 인덱스를 입력해주세요."),
+    POST_REWARDS_EMPTY_CHALLENGEIDX(false, 2205, "챌린지 인덱스를 입력해주세요."),
+    POST_REWARDS_EMPTY_POINT(false, 2206, "포인트를 입력해주세요."),
+    POST_REWARDS_EMPTY_EXPERIENCE(false, 2207, "경험치를 입력해주세요."),
+    POST_REWARDS_EMPTY_ACHIEVEMENT(false, 2208, "달성률을 입력해주세요."),
+
+    POST_REWARDS_INVALID_POINT(false, 2209, "포인트를 확인해주세요."),
+    POST_REWARDS_INVALID_EXPERIENCE(false, 2210, "경험치를 확인해주세요."),
+    POST_REWARDS_INVALID_ACHIEVEMENT(false, 2211, "달성률을 확인해주세요."),
+
     /**
      * 3000 : Response 오류
      */
@@ -109,6 +119,10 @@ public enum BaseResponseStatus {
     NO_ACCESS_USER(false, 3043, "접근이 불가능한 사용자입니다."),
     EXITS_SETTING(false, 3044, "이미 설정이 되어있습니다."),
     EXITS_CANCEL(false, 3045, "이미 해제가 되어있습니다."),
+
+    EXIST_REWARD(false, 3046, "이미 보상을 받았습니다."),
+    NOT_END_CHALLENGE(false, 3047, "종료된 챌린지가 아닙니다."),
+    POST_FAIL_REWARD(false, 3048, "보상받기에 실패하였습니다."),
 
     /**
      * 4000 : Database, Server 오류

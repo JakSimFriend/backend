@@ -1,7 +1,9 @@
 package com.example.demo.src.mychallenge;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.challenge.model.PostChallenge;
 import com.example.demo.src.mychallenge.model.PostCertificationRes;
+import com.example.demo.src.mychallenge.model.PostReward;
 import com.example.demo.src.s3.AwsS3Service;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -70,4 +72,32 @@ public class MyChallengeService {
             throw new BaseException(CERTIFICATION_FAIL);
         }
     }
+
+    public int postReward(PostReward postReward) throws BaseException {
+        int challengeIdx = postReward.getChallengeIdx();
+        int userIdx = postReward.getUserIdx();
+
+        int challenge = myChallengeDao.checkChallenge(challengeIdx);
+        if(challenge == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        int member = myChallengeDao.checkMember(challengeIdx, userIdx);
+        if(member == 0) throw new BaseException(NOT_EXIST_MEMBER);
+
+        int end = myChallengeDao.getEnd(challengeIdx);
+        if(end == 0) throw new BaseException(NOT_END_CHALLENGE);
+
+        int achievement = myChallengeDao.checkAchievement(challengeIdx, userIdx);
+        if(achievement == 1) throw new BaseException(EXIST_REWARD);
+
+        int experience = myChallengeDao.checkExperience(challengeIdx, userIdx);
+        if(experience == 1) throw new BaseException(EXIST_REWARD);
+
+        try {
+            int result = myChallengeDao.postReward(postReward);
+            return result;
+        } catch (Exception exception) {
+            throw new BaseException(POST_FAIL_REWARD);
+        }
+    }
+
 }

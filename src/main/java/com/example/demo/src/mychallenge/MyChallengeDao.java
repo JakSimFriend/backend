@@ -1,9 +1,12 @@
 package com.example.demo.src.mychallenge;
 
+import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.mychallenge.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.text.DateFormat;
@@ -669,6 +672,41 @@ public class MyChallengeDao {
                         rs.getInt("exitStatus")
                         ), userIdx, challengeIdx, userIdx, challengeIdx, challengeIdx, challengeIdx
         );
+    }
+
+    @Transactional
+    public int postReward(PostReward postReward) throws Exception{
+        int challengeIdx = postReward.getChallengeIdx();
+        int userIdx = postReward.getUserIdx();
+
+        String point = "insert into Point(point, userIdx, categoryIdx) values (?, ?, 4);\n";
+        Object[] pointParams = new Object[]{postReward.getPoint(), userIdx};
+        this.jdbcTemplate.update(point, pointParams);
+
+        String achievement = "insert into AchievementRate(achievement, userIdx, challengeIdx) values (?, ?, ?);\n";
+        Object[] achievementParams = new Object[]{postReward.getAchievement(), userIdx, challengeIdx};
+        this.jdbcTemplate.update(achievement, achievementParams);
+
+        String experience = "insert into ExperienceRate(experience, userIdx, challengeIdx) values (?, ?, ?);\n";
+        Object[] experienceParams = new Object[]{postReward.getExperience(), userIdx, challengeIdx};
+        this.jdbcTemplate.update(experience, experienceParams);
+
+        return 1;
+    }
+
+    public int getEnd(int challengeIdx) {
+        String getEndQuery = "select if(date_add(startDate, interval 14 day ) < now(), 1, 0) status from Challenge where challengeIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getEndQuery, (rs, rowNum) -> new Integer(rs.getInt("status")), challengeIdx);
+    }
+
+    public int checkAchievement(int challengeIdx, int userIdx) {
+        String checkQuery = "select exists(select achievementIdx from AchievementRate where challengeIdx = ? and userIdx = ?)\n";
+        return this.jdbcTemplate.queryForObject(checkQuery, int.class, challengeIdx, userIdx);
+    }
+
+    public int checkExperience(int challengeIdx, int userIdx) {
+        String checkQuery = "select exists(select experienceIdx from ExperienceRate where challengeIdx = ? and userIdx = ?)\n";
+        return this.jdbcTemplate.queryForObject(checkQuery, int.class, challengeIdx, userIdx);
     }
 
 }

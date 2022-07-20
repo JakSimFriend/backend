@@ -2,6 +2,7 @@ package com.example.demo.src.mychallenge;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.challenge.model.PostChallengeJoin;
 import com.example.demo.src.mychallenge.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,4 +236,39 @@ public class MyChallengeController {
 
     }
 
+    /**
+     * 보상받기 API
+     * [POST] /my-challenges/reward
+     * @return BaseResponse<PostReward>
+     */
+    // Body
+    @ResponseBody
+    @PostMapping("/reward")
+    public BaseResponse<String> joinChallenge(@RequestBody PostReward postReward) {
+        try {
+            int userIdx = postReward.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            if(postReward.getUserIdx() == 0) return new BaseResponse<>(POST_REWARDS_EMPTY_USERIDX);
+            if(postReward.getChallengeIdx() == 0) return new BaseResponse<>(POST_REWARDS_EMPTY_CHALLENGEIDX);
+            if(postReward.getPoint() == 0) return new BaseResponse<>(POST_REWARDS_EMPTY_POINT);
+            if(postReward.getExperience() == 0) return new BaseResponse<>(POST_REWARDS_EMPTY_EXPERIENCE);
+            if(postReward.getAchievement() == 0) return new BaseResponse<>(POST_REWARDS_EMPTY_ACHIEVEMENT);
+
+            if(postReward.getPoint() < 0 || postReward.getPoint() > 6000) return new BaseResponse<>(POST_REWARDS_INVALID_POINT);
+            if(postReward.getExperience() < 0 || postReward.getExperience() > 2200) return new BaseResponse<>(POST_REWARDS_INVALID_EXPERIENCE);
+            if(postReward.getAchievement() < 0 || postReward.getAchievement() > 100) return new BaseResponse<>(POST_REWARDS_INVALID_ACHIEVEMENT);
+
+            String message = "";
+            int result = myChallengeService.postReward(postReward);
+            if(result == 1) message = "성공";
+
+            return new BaseResponse<>(message);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
