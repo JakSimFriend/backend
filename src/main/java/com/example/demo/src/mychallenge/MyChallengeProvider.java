@@ -110,4 +110,16 @@ public class MyChallengeProvider {
         }
     }
 
+    public GetCalculation getCalculation(int challengeIdx, int userIdx) throws BaseException {
+        int check = myChallengeDao.checkChallenge(challengeIdx);
+        if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        try {
+            GetCalculation getCalculation = myChallengeDao.getCalculation(challengeIdx, userIdx);
+            return getCalculation;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

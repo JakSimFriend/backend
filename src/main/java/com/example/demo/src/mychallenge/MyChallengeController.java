@@ -210,4 +210,29 @@ public class MyChallengeController {
 
     }
 
+    /**
+     * 진행중 정산 조회 API
+     * [GET] /my-challenges/:idx/:useridx/progress-calculation
+     *
+     * @return BaseResponse<GetCalculation>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{idx}/{userIdx}/progress-calculation")
+    public BaseResponse<GetCalculation> getCalculation(@PathVariable("idx") int challengeIdx, @PathVariable("userIdx") int userIdx) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            GetCalculation getCalculation = myChallengeProvider.getCalculation(challengeIdx, userIdx);
+            if(getCalculation == null){return new BaseResponse<>(NOT_EXIST_DETAIL);}
+            return new BaseResponse<>(getCalculation);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
 }

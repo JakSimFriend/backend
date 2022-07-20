@@ -584,5 +584,88 @@ public class MyChallengeDao {
     }
 
 
+    public GetCalculation getCalculation(int challengeIdx, int userIdx) {
+        String getCalculationQuery = "select c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       date_format(now(), '%Y/%m/%d일 %H:%i 기준') nowTime,\n" +
+                "       case\n" +
+                "           when c.cycle = '1' then round((certificationCount/14) * 100)\n" +
+                "           when c.cycle = '7' then round((certificationCount/(c.count * 2)) * 100)\n" +
+                "           when c.cycle = '14' then round((certificationCount/c.count) * 100)\n" +
+                "               end as achievement,\n" +
+                "       (memberCount * 1000) totalCash,\n" +
+                "       if(date_add(c.startDate, interval 14 day) < now(),\n" +
+                "           floor((\n" +
+                "               case\n" +
+                "                   when c.cycle = '1' then round((certificationCount/14) * 100)\n" +
+                "                   when c.cycle = '7' then round((certificationCount/(c.count * 2)) * 100)\n" +
+                "                   when c.cycle = '14' then round((certificationCount/c.count) * 100)\n" +
+                "                   end) / 100 * 1000),\n" +
+                "           if(\n" +
+                "               case when c.cycle = '1' then round((certificationCount/14) * 100)\n" +
+                "                   when c.cycle = '7' then round((certificationCount/(c.count * 2)) * 100)\n" +
+                "                   when c.cycle = '14' then round((certificationCount/c.count) * 100)\n" +
+                "                   end <= 90,\n" +
+                "               floor((case\n" +
+                "                   when c.cycle = '1' then round((certificationCount/14) * 100)\n" +
+                "                   when c.cycle = '7' then round((certificationCount/(c.count * 2)) * 100)\n" +
+                "                   when c.cycle = '14' then round((certificationCount/c.count) * 100)\n" +
+                "                   end) / 100 * 1000),\n" +
+                "               1000)) refundCash,\n" +
+                "       (certificationCount * 100) + (floor(friendCount / (memberCount - 1))) * (floor(std((ifnull(ach, 0))))) / 100 experience,\n" +
+                "       certificationCount * 100 individual,\n" +
+                "       floor(friendCount / (memberCount - 1)) friend,\n" +
+                "       floor(std((ifnull(ach, 0)))) bonus,\n" +
+                "       if(now() > date_add(startDate, interval 14 day), 1, 0) exitStatus\n" +
+                "from Challenge c\n" +
+                "left join(select ce.userIdx u, ce.challengeIdx, ce.certificationIdx cc, count(certificationIdx) certificationCount\n" +
+                "    from Certification ce\n" +
+                "    where ce.status = 1\n" +
+                "    group by challengeIdx, userIdx having ce.userIdx = ?\n" +
+                ") as x on x.challengeIdx = c.challengeIdx\n" +
+                "left join (\n" +
+                "    select m.challengeIdx, count(m.userIdx) memberCount\n" +
+                "    from Member m where m.status = 1 and m.challengeIdx = ?\n" +
+                "    ) as y on y.challengeIdx = c.challengeIdx\n" +
+                "left join (\n" +
+                "    select m.challengeIdx, 100 * ifnull(count(certificationIdx), 0) friendCount\n" +
+                "    from Member m, Certification ce\n" +
+                "    where m.challengeIdx = ce.challengeIdx and m.userIdx = ce.userIdx and m.userIdx not in(?) and m.challengeIdx = ?\n" +
+                "    group by ce.challengeIdx, ce.userIdx\n" +
+                "    ) as w on w.challengeIdx = c.challengeIdx,\n" +
+                "Member m\n" +
+                "left join (\n" +
+                "    select a.userIdx, case\n" +
+                "                when avg(achievement) >= 0 && avg(achievement) < 10 then 0\n" +
+                "                when avg(achievement) >= 10 && avg(achievement) < 30 then 20\n" +
+                "                when avg(achievement) >= 30 && avg(achievement) < 50 then 40\n" +
+                "                when avg(achievement) >= 50 && avg(achievement) < 70 then 60\n" +
+                "                when avg(achievement) >= 70 && avg(achievement) < 90 then 80\n" +
+                "                when avg(achievement) >= 90 && avg(achievement) < 100 then 100\n" +
+                "            end as ach\n" +
+                "    from AchievementRate a\n" +
+                "    group by a.userIdx\n" +
+                "    ) as z on z.userIdx = m.userIdx and m.challengeIdx = ? and m.status = 1\n" +
+                "where c.challengeIdx = ?\n" +
+                "and c.challengeIdx = m.challengeIdx\n" +
+                "and c.status = 1;";
+
+        return this.jdbcTemplate.queryForObject(getCalculationQuery,
+                (rs, rowNum) -> new GetCalculation(
+                        rs.getInt("challengeIdx"),
+                        rs.getString("title"),
+                        rs.getString("nowTime"),
+                        rs.getInt("achievement"),
+                        rs.getInt("totalCash"),
+                        rs.getInt("refundCash"),
+                        rs.getInt("experience"),
+                        rs.getInt("individual"),
+                        rs.getInt("friend"),
+                        rs.getInt("bonus"),
+                        rs.getInt("exitStatus")
+                        ), userIdx, challengeIdx, userIdx, challengeIdx, challengeIdx, challengeIdx
+        );
+    }
+
 }
 
