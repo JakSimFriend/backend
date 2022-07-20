@@ -14,6 +14,8 @@ import java.util.List;
 public class GetProgressInfo {
     private int challengeIdx;
     private String title;
+    private Date startDate;
+    private Date endDate;
     private List<GetDateList> dateLists;
     private int certificationStatus;
     private int remainingDay;

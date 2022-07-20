@@ -193,13 +193,15 @@ public class MyChallengeDao {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String getProgressInfoQuery = "select c.challengeIdx,\n" +
                 "       c.title,\n" +
+                "       c.startDate,\n" +
+                "       date_add(c.startDate, interval 14 day ) endDate,\n" +
                 "       exists(select userIdx from Certification ce where ce.status = 1 and (DATEDIFF(now(), createAt)) = 0 and challengeIdx = c.challengeIdx and userIdx = ?) certificationStatus,\n" +
                 "       datediff(date_add(c.startDate, interval 14 day), curdate()) remainingDay,\n" +
-                "       case\n" +
+                "       ifnull(case\n" +
                 "           when c.cycle = '1' then 14 - nowCount\n" +
                 "           when c.cycle = '7' then (count * 2) - nowCount\n" +
                 "           when c.cycle = '14' then count - nowCount\n" +
-                "           end as remainingCount,\n" +
+                "           end, 0) as remainingCount,\n" +
                 "       concat(DATE_FORMAT(c.startDate, '%c월 %e일'), ' ~ ', DATE_FORMAT(ADDDATE(c.startDate, 14), '%c월 %e일')) as date,\n" +
                 "       c.limited,\n" +
                 "       case\n" +
@@ -255,6 +257,8 @@ public class MyChallengeDao {
                 (rs, rowNum) -> new GetProgressInfo(
                         rs.getInt("challengeIdx"),
                         rs.getString("title"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate"),
                         this.jdbcTemplate.query(getDateListQuery, (rs1, rowNum1) -> new GetDateList(rs1.getDate("certificationDate")), challengeIdx, userIdx),
                         rs.getInt("certificationStatus"),
                         rs.getInt("remainingDay"),
