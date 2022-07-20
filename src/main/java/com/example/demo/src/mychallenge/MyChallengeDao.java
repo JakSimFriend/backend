@@ -326,7 +326,7 @@ public class MyChallengeDao {
 
     public List<GetMyChallengeApplication> getMyChallengeApplication(int userIdx) {
         String getCountQuery = "select count(challengeIdx) recruitmentCount,\n" +
-                "       (select count(challengeIdx) from ChallengeWaiting where c.proceeding = 0 and userIdx = ? and status = 1 and c.startDate > now() and userIdx != founderIdx) applyingCount\n" +
+                "       (select count(ce.challengeIdx) from ChallengeWaiting ce, Challenge c where c.proceeding = 0 and ce.userIdx = ? and c.status = 1 and ce.status = 1 and c.startDate > now() and ce.userIdx != ce.founderIdx and c.challengeIdx = ce.challengeIdx) applyingCount\n" +
                 "from Challenge c\n" +
                 "where c.status = 1\n" +
                 "and startDate > now()\n" +
