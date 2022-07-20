@@ -235,6 +235,7 @@ public class ChallengeDao {
                 "           when c.cycle = '7' then concat('1주일에 ', c.count, '회')\n" +
                 "           when c.cycle = '14' then concat('2주일에 ', c.count, '회')\n" +
                 "               end as certification,\n" +
+                "       date_format(c.deadline, '%H시 %m분 마감') deadline,\n" +
                 "       accept,\n" +
                 "       waiting,\n" +
                 "       if(floor(avg(ifnull(ach, 0))) = 0, '달성률 정보 없음', concat('상위 ', floor(avg(ifnull(ach, 0))), '%')) tier,\n" +
@@ -274,7 +275,7 @@ public class ChallengeDao {
                         rs.getString("tier"),
                         rs.getInt("myPoint"),
                         rs.getInt("existStatus")),
-                userIdx, userIdx, challengeIdx
+                userIdx, userIdx, challengeIdx, challengeIdx
         );
 
     }
