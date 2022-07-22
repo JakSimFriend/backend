@@ -30,16 +30,6 @@ public class ChallengeDao {
         String lastInserIdQuery = "select last_insert_id()";
         int challengeIdx =  this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
 
-        if(postChallenge.getTags() == null){
-            return challengeIdx;
-        }
-
-        for(int i = 0; i < postChallenge.getTags().size(); i++){
-            String createTagQuery = "insert into ChallengeTag (tag, challengeIdx, userIdx) values (?, ?, ?);";
-            Object[] createTagParams = new Object[]{postChallenge.getTags().get(i), challengeIdx, postChallenge.getUserIdx()};
-            this.jdbcTemplate.update(createTagQuery, createTagParams);
-        }
-
         int userIdx = postChallenge.getUserIdx();
         String addWaitingQuery = "insert into ChallengeWaiting(challengeIdx, userIdx, founderIdx, accept) values (?, ?, ?, ?);";
         Object[] addWaitingParams = new Object[]{challengeIdx, userIdx, userIdx, 1};
@@ -52,6 +42,16 @@ public class ChallengeDao {
 
         subtractUserPoint(userIdx);
         addChallengePoint(challengeIdx, userIdx);
+
+        if(postChallenge.getTags() == null){
+            return challengeIdx;
+        }
+
+        for(int i = 0; i < postChallenge.getTags().size(); i++){
+            String createTagQuery = "insert into ChallengeTag (tag, challengeIdx, userIdx) values (?, ?, ?);";
+            Object[] createTagParams = new Object[]{postChallenge.getTags().get(i), challengeIdx, postChallenge.getUserIdx()};
+            this.jdbcTemplate.update(createTagQuery, createTagParams);
+        }
 
         return challengeIdx;
     }
@@ -308,4 +308,45 @@ public class ChallengeDao {
                         rs.getInt("people")
                         ), challengeIdx);
     }
+
+    public int createAlert(String alert, int userIdx, String image) {
+        String creatAlertQuery = "insert into Alert(alert, userIdx, image) values (?, ?, ?);\n";
+        Object[] createAlertParams = new Object[]{alert, userIdx, image};
+        this.jdbcTemplate.update(creatAlertQuery, createAlertParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
+    public String getNickName(int userIdx) {
+        String getNickNameQuery = "select nickName from User where userIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getNickNameQuery, (rs, rowNum) -> new String(rs.getString("nickName")), userIdx);
+    }
+
+    public String getToken(int userIdx) {
+        String getTokenQuery = "select token from UserDevice where userIdx = ? and status = 1;\n";
+        String token = this.jdbcTemplate.queryForObject(getTokenQuery, (rs, rowNum) -> new String(rs.getString("token")), userIdx);
+        return token;
+    }
+
+    public String getTitle(int challengeIdx) {
+        String getTitleQuery = "select title from Challenge where challengeIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getTitleQuery, (rs, rowNum) -> new String(rs.getString("title")), challengeIdx);
+    }
+
+    public Integer getFounder(int challengeIdx) {
+        String getFounderQuery = "select userIdx from Challenge where challengeIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getFounderQuery, (rs, rowNum) -> new Integer(rs.getInt("userIdx")), challengeIdx);
+    }
+
+    public Integer getChallenge(int waitingIdx) {
+        String getchallengeQuery = "select challengeIdx from ChallengeWaiting where waitingIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getchallengeQuery, (rs, rowNum) -> new Integer(rs.getInt("challengeIdx")), waitingIdx);
+    }
+
+    public Integer getUser(int waitingIdx) {
+        String getUserQuery = "select userIdx from ChallengeWaiting where waitingIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getUserQuery, (rs, rowNum) -> new Integer(rs.getInt("userIdx")), waitingIdx);
+    }
+
 }

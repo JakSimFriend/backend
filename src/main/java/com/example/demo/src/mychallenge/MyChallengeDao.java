@@ -711,5 +711,34 @@ public class MyChallengeDao {
         return this.jdbcTemplate.queryForObject(checkQuery, int.class, challengeIdx, userIdx);
     }
 
+    public int createAlert(String alert, String image, int certificationIdx, int userIdx, int challengeIdx) {
+        String createReactionQuery = "insert into ChallengeAlert(alert, image, certificationIdx, userIdx, challengeIdx) values (?, ?, ?, ?, ?);\n";
+        Object[] createChallengeParams = new Object[]{alert, image, certificationIdx, userIdx, challengeIdx};
+        this.jdbcTemplate.update(createReactionQuery, createChallengeParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
+    public String getToken(int userIdx) {
+        String getTokenQuery = "select token from UserDevice where userIdx = ? and status = 1;\n";
+        String token = this.jdbcTemplate.queryForObject(getTokenQuery, (rs, rowNum) -> new String(rs.getString("token")), userIdx);
+        return token;
+    }
+
+    public String getTitle(int challengeIdx) {
+        String getTitleQuery = "select title from Challenge where challengeIdx = ? and status = 1;\n";
+        return this.jdbcTemplate.queryForObject(getTitleQuery, (rs, rowNum) -> new String(rs.getString("title")), challengeIdx);
+    }
+
+
+    public List<GetToken> getMember(int challengeIdx, int userIdx) {
+        String getMemberQuery = "select m.userIdx, ud.token from Member m, UserDevice ud where m.userIdx = ud.userIdx and m.challengeIdx = ? and m.userIdx != ?;";
+
+        return this.jdbcTemplate.query(getMemberQuery,
+                (rs, rowNum) -> new GetToken(rs.getInt("userIdx"),
+                        rs.getString("token")), challengeIdx, userIdx);
+    }
+
 }
 
