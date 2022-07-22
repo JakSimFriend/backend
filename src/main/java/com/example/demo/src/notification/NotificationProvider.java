@@ -36,4 +36,13 @@ public class NotificationProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetChallengeAlert> getChallengeAlert(int challengeIdx, int userIdx) throws BaseException {
+        try {
+            List<GetChallengeAlert> getChallengeAlert = notificationDao.getChallengeAlert(challengeIdx, userIdx);
+            return getChallengeAlert;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

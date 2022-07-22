@@ -98,4 +98,27 @@ public class NotificationController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 챌린지 내부 알림 조회 API
+     * [GET] /alerts/:challengeIdx/:userIdx
+     * @return BaseResponse<GetChallangeAlert>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{challengeIdx}/{userIdx}")
+    public BaseResponse<List<GetChallengeAlert>> getChallengeAlert(@PathVariable("challengeIdx") int challengeIdx, @PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetChallengeAlert> getChallengeAlert = notificationProvider.getChallengeAlert(challengeIdx, userIdx);
+            if(getChallengeAlert.size() == 0) throw new BaseException(NOTHING_NOTIFICATION);
+            return new BaseResponse<>(getChallengeAlert);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

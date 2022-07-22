@@ -66,4 +66,44 @@ public class NotificationDao {
         Object[] deleteNotificationParams = new Object[]{userIdx};
         return this.jdbcTemplate.update(deleteNotificationQuery, deleteNotificationParams);
     }
+
+    public List<GetChallengeAlert> getChallengeAlert(int challengeIdx, int userIdx) {
+        String getChallengeAlertQuery = "select date_format(createAt, '%c월 %e일') date\n" +
+                "from ChallengeAlert\n" +
+                "where userIdx = ? and challengeIdx = ? and status = 1 group by date order by date desc ;";
+        String getAlertQuery = "select ca.alertIdx,\n" +
+                "       ca.image,\n" +
+                "       ca.alert,\n" +
+                "       ifnull(x.certificationIdx, 0) certificationIdx,\n" +
+                "       ifnull(certificationPhoto, '인증알림아님') certificationPhoto,\n" +
+                "       date_format(ca.createAt, '%p %l:%i') time,\n" +
+                "       ifnull(reportIdx, 0) reportStatus\n" +
+                "from ChallengeAlert ca\n" +
+                " left join (\n" +
+                "     select ce.certificationIdx, certificationPhoto\n" +
+                "     from Certification ce where ce.status = 1)\n" +
+                " as x on x.certificationIdx = ca.certificationIdx\n" +
+                "left join (\n" +
+                "    select certificationIdx, reportIdx\n" +
+                "    from Report where status = 1\n" +
+                "    ) as y on y.certificationIdx = ca.certificationIdx\n" +
+                "where ca.userIdx = ? and ca.challengeIdx = ?\n" +
+                "and ca.status = 1 and date_format(ca.createAt, '%c월 %e일') = ?\n" +
+                "order by ca.createAt desc;";
+
+        return this.jdbcTemplate.query(getChallengeAlertQuery,
+                (rs, rowNum) -> new GetChallengeAlert(
+                        rs.getString("date"),
+                        this.jdbcTemplate.query(getAlertQuery, (rs1, rowNum1) -> new GetAlert(
+                                rs1.getInt("alertIdx"),
+                                rs1.getString("image"),
+                                rs1.getString("alert"),
+                                rs1.getInt("certificationIdx"),
+                                rs1.getString("certificationPhoto"),
+                                rs1.getString("time"),
+                                rs1.getInt("reportStatus")
+                        ), userIdx, challengeIdx, rs.getString("date"))
+                ), userIdx, challengeIdx);
+    }
+
 }
