@@ -623,6 +623,7 @@ public class MyChallengeDao {
                 "       certificationCount * 100 individual,\n" +
                 "       floor(friendCount / (memberCount - 1)) friend,\n" +
                 "       floor(std((ifnull(ach, 0)))) bonus,\n" +
+                "       exists(select experienceIdx from ExperienceRate where challengeIdx = ? and userIdx = ? and status = 1) rewardStatus,\n" +
                 "       if(now() > date_add(startDate, interval 14 day), 1, 0) exitStatus\n" +
                 "from Challenge c\n" +
                 "left join(select ce.userIdx u, ce.challengeIdx, ce.certificationIdx cc, count(certificationIdx) certificationCount\n" +
@@ -669,8 +670,9 @@ public class MyChallengeDao {
                         rs.getInt("individual"),
                         rs.getInt("friend"),
                         rs.getInt("bonus"),
+                        rs.getInt("rewardStatus"),
                         rs.getInt("exitStatus")
-                        ), userIdx, challengeIdx, userIdx, challengeIdx, challengeIdx, challengeIdx
+                        ),challengeIdx, userIdx, userIdx, challengeIdx, userIdx, challengeIdx, challengeIdx, challengeIdx
         );
     }
 
@@ -700,12 +702,12 @@ public class MyChallengeDao {
     }
 
     public int checkAchievement(int challengeIdx, int userIdx) {
-        String checkQuery = "select exists(select achievementIdx from AchievementRate where challengeIdx = ? and userIdx = ?)\n";
+        String checkQuery = "select exists(select achievementIdx from AchievementRate where challengeIdx = ? and userIdx = ? and status = 1)\n";
         return this.jdbcTemplate.queryForObject(checkQuery, int.class, challengeIdx, userIdx);
     }
 
     public int checkExperience(int challengeIdx, int userIdx) {
-        String checkQuery = "select exists(select experienceIdx from ExperienceRate where challengeIdx = ? and userIdx = ?)\n";
+        String checkQuery = "select exists(select experienceIdx from ExperienceRate where challengeIdx = ? and userIdx = ? and status = 1)\n";
         return this.jdbcTemplate.queryForObject(checkQuery, int.class, challengeIdx, userIdx);
     }
 

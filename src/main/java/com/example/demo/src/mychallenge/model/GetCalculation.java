@@ -18,5 +18,6 @@ public class GetCalculation {
     private int individual;
     private int friend;
     private int bonus;
+    private int rewardStatus;
     private int exitStatus;
 }
