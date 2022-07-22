@@ -123,6 +123,7 @@ public enum BaseResponseStatus {
     EXIST_REWARD(false, 3046, "이미 보상을 받았습니다."),
     NOT_END_CHALLENGE(false, 3047, "종료된 챌린지가 아닙니다."),
     POST_FAIL_REWARD(false, 3048, "보상받기에 실패하였습니다."),
+    NOTHING_STATUS(false, 3049, "현황 정보가 존재하지 않습니다."),
 
     /**
      * 4000 : Database, Server 오류
