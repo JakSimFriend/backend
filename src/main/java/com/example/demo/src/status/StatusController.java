@@ -48,7 +48,7 @@ public class StatusController {
             }
 
             List<GetStatus> getStatus = statusProvider.getStatus(userIdx);
-            if(getStatus.size() == 0) throw new BaseException(NOTHING_STATUS);
+            if(getStatus.get(0).getUserIdx() == 0) throw new BaseException(NOTHING_STATUS);
             return new BaseResponse<>(getStatus);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
