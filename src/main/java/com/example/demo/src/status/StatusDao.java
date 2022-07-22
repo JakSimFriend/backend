@@ -47,5 +47,33 @@ public class StatusDao {
                 ), userIdx, userIdx);
     }
 
+    public List<GetStatusDetail> getStatusDetail(int userIdx) {
+        String getStatusQuery = "select c.categoryIdx,\n" +
+                "       ca.categoryName,\n" +
+                "       ca.categoryPhoto,\n" +
+                "       c.challengeIdx,\n" +
+                "       c.title,\n" +
+                "       date_format(date_add(startDate, interval 14 day ), '%Y/%m/%d 종료') endDate,\n" +
+                "       e.experience,\n" +
+                "       sum(experience) over(order by e.createAt, experienceIdx) as total\n" +
+                "from Category ca, Challenge c, ExperienceRate e\n" +
+                "where c.challengeIdx = e.challengeIdx\n" +
+                "and c.categoryIdx = ca.categoryIdx\n" +
+                "and e.userIdx = ?\n" +
+                "and e.status = 1\n" +
+                "order by e.createAt desc;";
+
+        return this.jdbcTemplate.query(getStatusQuery,
+                (rs, rowNum) -> new GetStatusDetail(
+                        rs.getInt("categoryIdx"),
+                        rs.getString("categoryName"),
+                        rs.getString("categoryPhoto"),
+                        rs.getInt("challengeIdx"),
+                        rs.getString("title"),
+                        rs.getString("endDate"),
+                        rs.getInt("experience"),
+                        rs.getInt("total")
+                ), userIdx);
+    }
 
 }

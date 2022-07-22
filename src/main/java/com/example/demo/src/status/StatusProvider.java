@@ -35,4 +35,13 @@ public class StatusProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetStatusDetail> getStatusDetail(int userIdx) throws BaseException {
+        try {
+            List<GetStatusDetail> getStatusDetail = statusDao.getStatusDetail(userIdx);
+            return getStatusDetail;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

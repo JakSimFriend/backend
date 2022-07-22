@@ -54,4 +54,27 @@ public class StatusController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 현황 상세 조회 API
+     * [GET] /status/:userIdx/detail
+     * @return BaseResponse<GetStatus>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{userIdx}/detail")
+    public BaseResponse<List<GetStatusDetail>> getStatusDetail(@PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetStatusDetail> getStatusDetail = statusProvider.getStatusDetail(userIdx);
+            if(getStatusDetail.size() == 0) throw new BaseException(NOTHING_STATUS);
+            return new BaseResponse<>(getStatusDetail);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
