@@ -2,16 +2,29 @@ package com.example.demo.src.mychallenge;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.challenge.model.PostChallenge;
+import com.example.demo.src.fcm.FcmMessage;
+import com.example.demo.src.fcm.RequestDTO;
+import com.example.demo.src.mychallenge.model.GetToken;
 import com.example.demo.src.mychallenge.model.PostCertificationRes;
 import com.example.demo.src.mychallenge.model.PostReward;
 import com.example.demo.src.s3.AwsS3Service;
 import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.common.net.HttpHeaders;
+import com.google.gson.JsonParseException;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -19,18 +32,20 @@ import static com.example.demo.config.BaseResponseStatus.*;
 @Service
 public class MyChallengeService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    private final String API_URL = "https://fcm.googleapis.com/v1/projects/jaksimfriend/messages:send";
     private final MyChallengeDao myChallengeDao;
     private final MyChallengeProvider myChallengeProvider;
     private final JwtService jwtService;
+    private final ObjectMapper objectMapper;
     private final AwsS3Service awsS3Service;
 
     @Autowired
-    public MyChallengeService(MyChallengeDao myChallengeDao, MyChallengeProvider myChallengeProvider, JwtService jwtService, AwsS3Service awsS3Service) {
+    public MyChallengeService(MyChallengeDao myChallengeDao, MyChallengeProvider myChallengeProvider, JwtService jwtService, AwsS3Service awsS3Service, ObjectMapper objectMapper) {
         this.myChallengeDao = myChallengeDao;
         this.myChallengeProvider = myChallengeProvider;
         this.jwtService = jwtService;
         this.awsS3Service = awsS3Service;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional
@@ -53,18 +68,39 @@ public class MyChallengeService {
 
         try {
             String nickName = myChallengeDao.getNickName(userIdx);
+            List<GetToken> getToken = myChallengeDao.getMember(challengeIdx, userIdx);
+            System.out.println(getToken.get(0));
+
+            String title = "친구가 도전작심 인증을 했어요!";
+            String image = "https://jaksim-bucket.s3.ap-northeast-2.amazonaws.com/e26e96d2-b73a-4dc8-9f62-07c7bc83c125.png";
+            String body = nickName + "님이 도전작심을 인증하셨어요!";
 
             int exist = myChallengeDao.existCertification(challengeIdx, userIdx);
             if(exist == 0){
                 String imageUrl = awsS3Service.uploadProfile(multipartFile);
                 int certificationIdx = myChallengeDao.certification(challengeIdx, userIdx, imageUrl);
                 int afterPercent = myChallengeDao.getPercent(challengeIdx, userIdx);
+
+                for(int i = 0; i < getToken.size(); i++){
+                    RequestDTO requestDTO = new RequestDTO(getToken.get(i).getToken(), title, body, image);
+                    System.out.println(requestDTO + "객체");
+                    System.out.println(getToken.get(i).getToken() + " " +title + " " + body + " " + image);
+                    sendMessageTo(requestDTO.getTargetToken(), requestDTO.getTitle(), requestDTO.getBody(), requestDTO.getImage());
+                    int alert = myChallengeDao.createAlert(body, image, certificationIdx, getToken.get(i).getUserIdx(), challengeIdx);
+                }
                 return new PostCertificationRes(certificationIdx, challengeIdx, userIdx, nickName, 0, afterPercent);
             } else{
                 int beforePercent = myChallengeDao.getPercent(challengeIdx, userIdx);
                 String imageUrl = awsS3Service.uploadProfile(multipartFile);
                 int certificationIdx = myChallengeDao.certification(challengeIdx, userIdx, imageUrl);
                 int afterPercent = myChallengeDao.getPercent(challengeIdx, userIdx);
+                for(int i = 0; i < getToken.size(); i++){
+                    RequestDTO requestDTO = new RequestDTO(getToken.get(i).getToken(), title, body, image);
+                    System.out.println(requestDTO + "객체");
+                    System.out.println(getToken.get(i).getToken() + " " +title + " " + body + " " + image);
+                    sendMessageTo(requestDTO.getTargetToken(), requestDTO.getTitle(), requestDTO.getBody(), requestDTO.getImage());
+                    int alert = myChallengeDao.createAlert(body, image, certificationIdx, getToken.get(i).getUserIdx(), challengeIdx);
+                }
                 return new PostCertificationRes(certificationIdx, challengeIdx, userIdx, nickName, beforePercent, afterPercent);
             }
 
@@ -99,5 +135,49 @@ public class MyChallengeService {
             throw new BaseException(POST_FAIL_REWARD);
         }
     }
+
+    public void sendMessageTo(String targetToken, String title, String body, String image) throws IOException {
+        String message = makeMessage(targetToken, title, body, image);
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = RequestBody.create(message,
+                MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .post(requestBody)
+                .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
+                .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
+                .build();
+
+        Response response = client.newCall(request).execute();
+
+        System.out.println(response.body().string());
+    }
+
+    private String makeMessage(String targetToken, String title, String body, String image) throws JsonParseException, JsonProcessingException {
+        FcmMessage fcmMessage = FcmMessage.builder()
+                .message(FcmMessage.Message.builder()
+                        .token(targetToken)
+                        .notification(FcmMessage.Notification.builder()
+                                .title(title)
+                                .body(body)
+                                .image(image)
+                                .build()
+                        ).build()).validateOnly(false).build();
+
+        return objectMapper.writeValueAsString(fcmMessage);
+    }
+
+    private String getAccessToken() throws IOException {
+        String firebaseConfigPath = "jaksimfriend-firebase-adminsdk-pbdqf-076653fb04.json";
+
+        GoogleCredentials googleCredentials = GoogleCredentials
+                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
+                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+
+        googleCredentials.refreshIfExpired();
+        return googleCredentials.getAccessToken().getTokenValue();
+    }
+
 
 }
