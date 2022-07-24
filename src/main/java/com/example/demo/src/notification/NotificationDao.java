@@ -55,6 +55,12 @@ public class NotificationDao {
         return this.jdbcTemplate.queryForObject(checkNotificationQuery, int.class, checkNotificationParams);
     }
 
+    public int checkAlert(int alertIdx) {
+        String checkNotificationQuery = "select exists(select alertIdx from ChallengeAlert where alertIdx = ? and status = 1);";
+        int checkNotificationParams = alertIdx;
+        return this.jdbcTemplate.queryForObject(checkNotificationQuery, int.class, checkNotificationParams);
+    }
+
     public int checkUser(int alertIdx, int userIdx) {
         String checkNotificationQuery = "select exists(select alertIdx from Alert where alertIdx = ? and userIdx = ? and status = 1);";
         Object[] checkNotificationParams = new Object[]{alertIdx, userIdx};
@@ -104,6 +110,12 @@ public class NotificationDao {
                                 rs1.getInt("reportStatus")
                         ), userIdx, challengeIdx, rs.getString("date"))
                 ), userIdx, challengeIdx);
+    }
+
+    public int deleteAlert(int alertIdx, int userIdx){
+        String deleteNotificationQuery = "update ChallengeAlert set status = 0 where alertIdx = ? and userIdx = ?; ";
+        Object[] deleteNotificationParams = new Object[]{alertIdx, userIdx};
+        return this.jdbcTemplate.update(deleteNotificationQuery, deleteNotificationParams);
     }
 
 }

@@ -51,4 +51,16 @@ public class NotificationService {
         }
     }
 
+    public void deleteAlert(int alertIdx, int userIdx) throws BaseException {
+        int check = notificationDao.checkAlert(alertIdx);
+        if(check == 0) throw new BaseException(NOT_EXIST_NOTIFICATION);
+
+        try{
+            int result = notificationDao.deleteAlert(alertIdx, userIdx);
+            if(result == 0) throw new BaseException(DELETE_FAIL_NOTIFICATION);
+        } catch(Exception exception){
+            throw new BaseException(DELETE_FAIL_NOTIFICATION);
+        }
+    }
+
 }

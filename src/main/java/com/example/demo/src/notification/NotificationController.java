@@ -121,4 +121,26 @@ public class NotificationController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     *  챌린지 내부 알림 삭제 API
+     * [PATCH] /alerts/:idx/delete/:userIdx
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{idx}/delete/{userIdx}")
+    public BaseResponse<String> deleteAlert(@PathVariable("idx") int alertIdx, @PathVariable("userIdx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            notificationService.deleteAlert(alertIdx, userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
