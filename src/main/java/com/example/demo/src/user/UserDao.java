@@ -76,6 +76,12 @@ public class UserDao {
 
     }
 
+    public int checkToken(int userIdx) {
+        String checkQuery = "select exists(select token from UserDevice where userIdx = ?);";
+        return this.jdbcTemplate.queryForObject(checkQuery, int.class, userIdx);
+
+    }
+
     public int modifyUserName(PatchUserReq patchUserReq) {
         String modifyUserNameQuery = "update UserInfo set userName = ? where userIdx = ? ";
         Object[] modifyUserNameParams = new Object[]{patchUserReq.getUserName(), patchUserReq.getUserIdx()};
@@ -128,6 +134,13 @@ public class UserDao {
 
         String lastInserIdQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
+    public int updateDeviceToken(int userIdx, String deviceToken) {
+        String updateDeviceQuery = "update UserDevice set token = ? where userIdx = ?;";
+        Object[] updateDeviceParams = new Object[]{deviceToken, userIdx};
+
+        return this.jdbcTemplate.update(updateDeviceQuery, updateDeviceParams);
     }
 
     public int checkNickName(String nickName) {

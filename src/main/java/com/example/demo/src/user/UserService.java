@@ -46,7 +46,7 @@ public class UserService {
      * @return PostLogInRes
      * @throws BaseException
      */
-    public PostLoginRes createKakaoSignIn(String accessToken) throws BaseException {
+    public PostLoginRes createKakaoSignIn(String accessToken, String deviceToken) throws BaseException {
         JSONObject jsonObject;
 
         String header = "Bearer " + accessToken; // Bearer 다음에 공백 추가
@@ -126,10 +126,23 @@ public class UserService {
         if (userDao.checkEmail(email) == 1) {
             GetSocial getSocial = userDao.getIdx(email);
             int userIdx = getSocial.getUserIdx();
+
+            int check = userDao.checkToken(userIdx);
+            if(check == 0) {
+                int result = userDao.postDeviceToken(userIdx, deviceToken);
+                if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+            }
+
+            int result = userDao.updateDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+
             String jwt = jwtService.createJwt(userIdx);
             return new PostLoginRes(userIdx, jwt);
+
         } else {
             int userIdx = userDao.postEmail(email);
+            int result = userDao.postDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
             String jwt = jwtService.createJwt(userIdx);
             return new PostLoginRes(userIdx, jwt);
         }
@@ -209,10 +222,19 @@ public class UserService {
         if (userDao.checkEmail(email) == 1) {
             GetSocial getSocial = userDao.getIdx(email);
             int userIdx = getSocial.getUserIdx();
-            int result = userDao.postDeviceToken(userIdx, deviceToken);
+
+            int check = userDao.checkToken(userIdx);
+            if(check == 0) {
+                int result = userDao.postDeviceToken(userIdx, deviceToken);
+                if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+            }
+
+            int result = userDao.updateDeviceToken(userIdx, deviceToken);
             if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+
             String jwt = jwtService.createJwt(userIdx);
             return new PostLoginRes(userIdx, jwt);
+
         } else {
             int userIdx = userDao.postEmail(email);
             int result = userDao.postDeviceToken(userIdx, deviceToken);
