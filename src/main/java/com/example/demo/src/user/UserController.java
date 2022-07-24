@@ -250,4 +250,26 @@ public class UserController {
         }
     }
 
+    /**
+     * 로그아웃 API
+     * [PATCH] /users/:idx/logout
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @DeleteMapping("/{idx}/logout")
+    public BaseResponse<String> logout(@PathVariable("idx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            userService.deleteDeviceToken(userIdx);
+            String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }

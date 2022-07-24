@@ -124,6 +124,7 @@ public enum BaseResponseStatus {
     NOT_END_CHALLENGE(false, 3047, "종료된 챌린지가 아닙니다."),
     POST_FAIL_REWARD(false, 3048, "보상받기에 실패하였습니다."),
     NOTHING_STATUS(false, 3049, "현황 정보가 존재하지 않습니다."),
+    NOT_EXIST_TOKEN(false, 3050, "DEVICE TOKEN이 존재하지 않습니다."),
 
     /**
      * 4000 : Database, Server 오류
@@ -153,7 +154,7 @@ public enum BaseResponseStatus {
     SETTING_FAIL_ALERT(false, 4024, "알림 설정에 실패하였습니다."),
     SETTING_FAIL_ALERT_CANCEL(false, 4025, "알림 해제에 실패하였습니다."),
     SAVE_FAIL_DEVICE(false, 4026, "DEVICE TOKEN 저장에 실패하였습니다."),
-
+    LOGOUT_FAIL_USER(false, 4027, "로그아웃에 실패하였습니다."),
 
     // 5000 : 기타 오류
     WRONG_URL(false, 5001, "잘못된 URL 정보입니다."),

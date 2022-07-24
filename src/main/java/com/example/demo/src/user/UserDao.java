@@ -206,4 +206,10 @@ public class UserDao {
         return this.jdbcTemplate.update(addUserPointQuery, addUserPointParams);
     }
 
+    public int deleteDeviceToken(int userIdx) {
+        String deleteUserQuery = "delete from UserDevice where userIdx = ?;";
+        Object[] deleteUserParams = new Object[]{userIdx};
+
+        return this.jdbcTemplate.update(deleteUserQuery, deleteUserParams);
+    }
 }

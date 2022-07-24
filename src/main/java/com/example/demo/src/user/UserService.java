@@ -309,6 +309,20 @@ public class UserService {
         }
     }
 
+    public void deleteDeviceToken(int userIdx) throws BaseException {
+        int check = userDao.checkUser(userIdx);
+        if (check == 0) throw new BaseException(NOT_EXIST_USER);
+
+        int checkToken = userDao.checkToken(userIdx);
+        if(checkToken == 0) throw new BaseException(NOT_EXIST_TOKEN);
+
+        try {
+            int result = userDao.deleteDeviceToken(userIdx);
+            if (result == 0) throw new BaseException(LOGOUT_FAIL_USER);
+        } catch (Exception exception) {
+            throw new BaseException(LOGOUT_FAIL_USER);
+        }
+    }
 }
 
 
