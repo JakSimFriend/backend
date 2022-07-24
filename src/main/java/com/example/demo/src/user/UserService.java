@@ -303,6 +303,7 @@ public class UserService {
 
         try {
             int result = userDao.deleteUser(userIdx);
+            userDao.deleteDeviceToken(userIdx);
             if (result == 0) throw new BaseException(DELETE_FAIL_USER);
         } catch (Exception exception) {
             throw new BaseException(DELETE_FAIL_USER);
