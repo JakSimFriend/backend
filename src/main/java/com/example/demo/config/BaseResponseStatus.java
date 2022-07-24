@@ -22,7 +22,7 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
     EMPTY_ACCESS_TOKEN(false, 2004, "ACCESS TOKEN을 입력하세요."),
-
+    EMPTY_DEVICE_TOKEN(false,2005,"DEVICE TOKEN을 입력하세요."),
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
 
@@ -152,6 +152,7 @@ public enum BaseResponseStatus {
     GET_FAIL_REWARD(false, 4023, "광고 보상 받기에 실패하였습니다."),
     SETTING_FAIL_ALERT(false, 4024, "알림 설정에 실패하였습니다."),
     SETTING_FAIL_ALERT_CANCEL(false, 4025, "알림 해제에 실패하였습니다."),
+    SAVE_FAIL_DEVICE(false, 4026, "DEVICE TOKEN 저장에 실패하였습니다."),
 
 
     // 5000 : 기타 오류

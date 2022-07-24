@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -69,13 +70,18 @@ public class UserController {
     public BaseResponse<PostLoginRes> postGoogleLogIn() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String accessToken = request.getHeader("GOOGLE-ACCESS-TOKEN");
+        String deviceToken = request.getHeader("DEVICE-TOKEN");
 
         if (accessToken == null || accessToken.length() == 0) {
             return new BaseResponse<>(EMPTY_ACCESS_TOKEN);
         }
 
+        if (deviceToken == null || deviceToken.length() == 0) {
+            return new BaseResponse<>(EMPTY_DEVICE_TOKEN);
+        }
+
         try {
-            PostLoginRes postLoginRes = userService.createGoogleSignIn(accessToken);
+            PostLoginRes postLoginRes = userService.createGoogleSignIn(accessToken, deviceToken);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

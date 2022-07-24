@@ -142,13 +142,13 @@ public class UserService {
      * @return PostLogInRes
      * @throws BaseException
      */
-    public PostLoginRes createGoogleSignIn(String accessToken) throws BaseException {
-        final String RequestUrl = "https://www.googleapis.com/oauth2/v2/userinfo.email";
+    public PostLoginRes createGoogleSignIn(String accessToken, String deviceToken) throws BaseException {
+        final String RequestUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
 
         JSONObject jsonObject;
 
         String header = "Bearer " + accessToken; // Bearer 다음에 공백 추가
-        String apiURL = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
+        String apiURL = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken;
 
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Authorization", header);
@@ -196,27 +196,12 @@ public class UserService {
         if (body.length() == 0) {
             throw new BaseException(FAILED_TO_READ_RESPONSE);
         }
-        System.out.println(body);
 
-        String socialId;
-        String response;
+        String email;
         try {
             JSONParser jsonParser = new JSONParser();
             jsonObject = (JSONObject) jsonParser.parse(body);
-            socialId = "kakao_" + jsonObject.get("id").toString();
-            response = jsonObject.get("email").toString();
-        } catch (Exception e) {
-            throw new BaseException(FAILED_TO_PARSE);
-        }
-
-        String email = null;
-        try {
-            JSONParser jsonParser = new JSONParser();
-            JSONObject responObj = (JSONObject) jsonParser.parse(response);
-            if (responObj.get("email") != null) {
-                email = responObj.get("email").toString();
-                System.out.println(email);
-            }
+            email = jsonObject.get("email").toString();
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_PARSE);
         }
@@ -224,10 +209,14 @@ public class UserService {
         if (userDao.checkEmail(email) == 1) {
             GetSocial getSocial = userDao.getIdx(email);
             int userIdx = getSocial.getUserIdx();
+            int result = userDao.postDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
             String jwt = jwtService.createJwt(userIdx);
             return new PostLoginRes(userIdx, jwt);
         } else {
             int userIdx = userDao.postEmail(email);
+            int result = userDao.postDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
             String jwt = jwtService.createJwt(userIdx);
             return new PostLoginRes(userIdx, jwt);
         }

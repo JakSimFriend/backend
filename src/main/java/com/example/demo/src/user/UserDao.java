@@ -120,6 +120,16 @@ public class UserDao {
         return userIdx;
     }
 
+    public int postDeviceToken(int userIdx, String deviceToken) {
+        String postDeviceQuery = "insert into UserDevice(token, userIdx) values(?, ?);";
+        Object[] postDeviceParams = new Object[]{deviceToken, userIdx};
+
+        this.jdbcTemplate.update(postDeviceQuery, postDeviceParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
     public int checkNickName(String nickName) {
         String checkNickNameQuery = "select exists(select nickName from User where nickName = ?)";
         String checkNickNameParams = nickName;
