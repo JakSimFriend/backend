@@ -381,6 +381,7 @@ public class MyChallengeDao {
                 "and c.startDate > now()\n" +
                 "and proceeding = 0\n" +
                 "and w.userIdx != w.founderIdx\n" +
+                "and w.status = 1\n" +
                 "order by startDate, title;\n";
         String getTagsQuery = "select tag\n" +
                 "from ChallengeTag t, Challenge ch\n" +
