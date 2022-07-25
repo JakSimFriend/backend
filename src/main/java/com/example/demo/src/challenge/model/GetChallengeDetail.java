@@ -20,4 +20,5 @@ public class GetChallengeDetail {
     private String tier;
     private int myPoint;
     private int existStatus;
+    private int memberStatus;
 }

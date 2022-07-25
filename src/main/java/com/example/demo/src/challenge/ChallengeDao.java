@@ -274,8 +274,10 @@ public class ChallengeDao {
                         rs.getInt("waiting"),
                         rs.getString("tier"),
                         rs.getInt("myPoint"),
-                        rs.getInt("existStatus")),
-                userIdx, userIdx, challengeIdx, challengeIdx
+                        rs.getInt("existStatus"),
+                        rs.getInt("memberStatus")
+                        ),
+                userIdx, userIdx, challengeIdx, userIdx, challengeIdx, challengeIdx
         );
 
     }
