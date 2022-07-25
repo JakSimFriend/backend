@@ -42,12 +42,9 @@ public class ChallengeProvider {
     }
 
     public GetChallengeDetail getChallengeDetail(int challengeIdx, int userIdx) throws BaseException {
-        try {
-            int check = challengeDao.checkChallenge(challengeIdx);
-            if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
-        } catch (Exception exception) {
-            throw new BaseException(NOT_EXIST_CHALLENGE);
-        }
+        int check = challengeDao.checkChallenge(challengeIdx);
+        if(check == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
         try {
             GetChallengeDetail getChallengeDetail = challengeDao.getChallengeDetail(challengeIdx, userIdx);
             return getChallengeDetail;
