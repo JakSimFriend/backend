@@ -240,7 +240,7 @@ public class ChallengeDao {
                 "       ifnull(waiting, 0) waiting,\n" +
                 "       if(floor(avg(ifnull(ach, 0))) = 0, '달성률 정보 없음', concat('상위 ', floor(avg(ifnull(ach, 0))), '%')) tier,\n" +
                 "       (select sum(point) from Point where userIdx = ?) as myPoint,\n" +
-                "       exists(select userIdx from ChallengeWaiting where userIdx = ?) as existStatus,\n" +
+                "       exists(select userIdx from ChallengeWaiting w where w.userIdx = ? and w.status = 1 and w.challengeIdx = c.challengeIdx) as existStatus,\n" +
                 "       exists(select userIdx from Member m where m.userIdx = ? and m.status = 1 and m.challengeIdx = ?) as memberStatus\n" +
                 "from Member m\n" +
                 "   left join (\n" +
