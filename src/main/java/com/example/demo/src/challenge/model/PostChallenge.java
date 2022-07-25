@@ -17,7 +17,7 @@ public class PostChallenge {
     private Date startDate;
     private int cycle;
     private int count;
-    private Time deadline;
+    private String deadline;
     private int categoryIdx;
     private int userIdx;
     private List<String> tags;
