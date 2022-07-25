@@ -2,6 +2,7 @@ package com.example.demo.src.setting;
 
 import com.example.demo.src.setting.SettingProvider;
 import com.example.demo.src.setting.SettingService;
+import com.example.demo.src.setting.model.PostInquire;
 import com.example.demo.src.setting.model.PostReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +104,34 @@ public class SettingController {
             }
 
             int result = settingService.postReport(postReport);
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 문의하기 API
+     * [POST] /settings/Inquire
+     * @return BaseResponse<Integer>
+     */
+    @ResponseBody
+    @PostMapping("/Inquire")
+    public BaseResponse<Integer> postInquire(@RequestBody PostInquire postInquire) {
+        try {
+            if(postInquire.getUserIdx() == 0) return new BaseResponse<>(USERS_EMPTY_USER_ID);
+            if(postInquire.getTitle() == null) return new BaseResponse<>(POST_INQUIRE_EMPTY_TITLE);
+            if(postInquire.getContent() == null) return new BaseResponse<>(POST_INQUIRE_EMPTY_CONTENT);
+            if(postInquire.getTitle().length() < 1 || postInquire.getTitle().length() > 50) return new BaseResponse<>(POST_INQUIRE_INVALID_TITLE);
+            if(postInquire.getContent().length() < 1 || postInquire.getContent().length() > 400) return new BaseResponse<>(POST_INQUIRE_INVALID_CONTENT);
+
+            int userIdx = postInquire.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            int result = settingService.postInquire(postInquire);
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

@@ -75,6 +75,10 @@ public enum BaseResponseStatus {
     POST_REPORT_EMPTY_CHALLENGE(false, 2213, "챌린지 인덱스를 입력해주세요."),
     POST_REPORT_EMPTY_CERTIFICATION(false, 2214, "인증 인덱스를 입력해주세요."),
 
+    POST_INQUIRE_EMPTY_TITLE(false, 2215, "문의 제목을 입력해주세요."),
+    POST_INQUIRE_EMPTY_CONTENT(false, 2216, "문의 내용을 입력해주세요."),
+    POST_INQUIRE_INVALID_TITLE(false, 2217, "문의 제목 형식을 확인해주세요."),
+    POST_INQUIRE_INVALID_CONTENT(false, 2218, "문의 내용 형식을 확인해주세요."),
     /**
      * 3000 : Response 오류
      */
@@ -163,6 +167,7 @@ public enum BaseResponseStatus {
     SAVE_FAIL_DEVICE(false, 4026, "DEVICE TOKEN 저장에 실패하였습니다."),
     LOGOUT_FAIL_USER(false, 4027, "로그아웃에 실패하였습니다."),
     FAILED_TO_REPORT(false, 4028, "신고하기에 실패하였습니다."),
+    FAILED_TO_INQUIRE(false, 4029, "문의하기에 실패하였습니다."),
 
     // 5000 : 기타 오류
     WRONG_URL(false, 5001, "잘못된 URL 정보입니다."),

@@ -78,4 +78,13 @@ public class SettingService {
         }
     }
 
+    public int postInquire(PostInquire postInquire) throws BaseException {
+        try {
+            int result = settingDao.postInquire(postInquire);
+            return result;
+        } catch (Exception exception) {
+            throw new BaseException(FAILED_TO_INQUIRE);
+        }
+    }
+
 }

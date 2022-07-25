@@ -70,4 +70,13 @@ public class SettingDao {
         String checkReportQuery = "select exists(select reportIdx from Report where certificationIdx = ? and userIdx = ?);\n";
         return this.jdbcTemplate.queryForObject(checkReportQuery, int.class, certificationIdx, userIdx);
     }
+
+    public int postInquire(PostInquire postInquire) {
+        String postInquireQuery = "insert into Inquire(title, content, userIdx) values (?, ?, ?);\n";
+        Object[] postInquireParams = new Object[]{postInquire.getTitle(), postInquire.getContent(), postInquire.getUserIdx()};
+        this.jdbcTemplate.update(postInquireQuery, postInquireParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
 }
