@@ -1,11 +1,8 @@
 package com.example.demo.src.setting;
 
-import com.example.demo.src.profile.model.GetProfile;
 import com.example.demo.src.setting.SettingProvider;
 import com.example.demo.src.setting.SettingService;
-import com.example.demo.src.setting.model.GetNotice;
-import com.example.demo.src.setting.model.PostInquire;
-import com.example.demo.src.setting.model.PostReport;
+import com.example.demo.src.setting.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -157,6 +154,28 @@ public class SettingController {
 
             List<GetNotice> getNotice = settingProvider.getNotice();
             return new BaseResponse<>(getNotice);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 공지사항 상세 조회 API
+     * [GET] /settings/:noticeIdx/:userIdx
+     * @return BaseResponse<GetNoticeDetail>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{noticeIdx}/{userIdx}")
+    public BaseResponse<GetNoticeDetail> getNoticeDetail(@PathVariable("noticeIdx") int noticeIdx, @PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            GetNoticeDetail getNoticeDetail = settingProvider.getNoticeDetail(noticeIdx);
+            return new BaseResponse<>(getNoticeDetail);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }

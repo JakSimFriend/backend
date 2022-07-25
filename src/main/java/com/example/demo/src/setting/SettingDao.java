@@ -94,4 +94,18 @@ public class SettingDao {
                 ));
     }
 
+    public GetNoticeDetail getNoticeDetail(int noticeIdx){
+        String getNoticeQuery = "select noticeIdx,\n" +
+                "       title,\n" +
+                "       date_format(createAt, '%Y/%m/%d %H:%i') date,\n" +
+                "       content\n" +
+                "from Notice where noticeIdx = ? order by createAt desc ;";
+        return this.jdbcTemplate.queryForObject(getNoticeQuery,
+                (rs, rowNum) -> new GetNoticeDetail(
+                        rs.getInt("noticeIdx"),
+                        rs.getString("title"),
+                        rs.getString("date"),
+                        rs.getString("content")
+                ), noticeIdx);
+    }
 }

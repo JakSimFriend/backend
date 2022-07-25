@@ -40,4 +40,14 @@ public class SettingProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public GetNoticeDetail getNoticeDetail(int noticeIdx) throws BaseException{
+        try{
+            GetNoticeDetail getNoticeDetail = settingDao.getNoticeDetail(noticeIdx);
+            return getNoticeDetail;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
