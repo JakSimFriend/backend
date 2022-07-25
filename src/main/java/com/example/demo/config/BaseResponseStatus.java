@@ -71,6 +71,10 @@ public enum BaseResponseStatus {
     POST_REWARDS_INVALID_EXPERIENCE(false, 2210, "경험치를 확인해주세요."),
     POST_REWARDS_INVALID_ACHIEVEMENT(false, 2211, "달성률을 확인해주세요."),
 
+    POST_REPORT_EMPTY_USER(false, 2212, "사용자 인덱스를 입력해주세요."),
+    POST_REPORT_EMPTY_CHALLENGE(false, 2213, "챌린지 인덱스를 입력해주세요."),
+    POST_REPORT_EMPTY_CERTIFICATION(false, 2214, "인증 인덱스를 입력해주세요."),
+
     /**
      * 3000 : Response 오류
      */
@@ -125,6 +129,9 @@ public enum BaseResponseStatus {
     POST_FAIL_REWARD(false, 3048, "보상받기에 실패하였습니다."),
     NOTHING_STATUS(false, 3049, "현황 정보가 존재하지 않습니다."),
     NOT_EXIST_TOKEN(false, 3050, "DEVICE TOKEN이 존재하지 않습니다."),
+    NOT_EXIST_CERTIFICATION(false, 3051, "존재하지 않는 인증입니다."),
+    EXIST_REPORT(false, 3052, "이미 신고하셨습니다."),
+
 
     /**
      * 4000 : Database, Server 오류
@@ -155,6 +162,7 @@ public enum BaseResponseStatus {
     SETTING_FAIL_ALERT_CANCEL(false, 4025, "알림 해제에 실패하였습니다."),
     SAVE_FAIL_DEVICE(false, 4026, "DEVICE TOKEN 저장에 실패하였습니다."),
     LOGOUT_FAIL_USER(false, 4027, "로그아웃에 실패하였습니다."),
+    FAILED_TO_REPORT(false, 4028, "신고하기에 실패하였습니다."),
 
     // 5000 : 기타 오류
     WRONG_URL(false, 5001, "잘못된 URL 정보입니다."),

@@ -3,6 +3,7 @@ package com.example.demo.src.setting;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.setting.SettingDao;
 import com.example.demo.src.setting.SettingProvider;
+import com.example.demo.src.setting.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,30 @@ public class SettingService {
             if (result == 0) {throw new BaseException(SETTING_FAIL_ALERT_CANCEL);}
         } catch (Exception exception) {
             throw new BaseException(SETTING_FAIL_ALERT_CANCEL);
+        }
+    }
+
+    public int postReport(PostReport postReport) throws BaseException {
+        int challengeIdx = postReport.getChallengeIdx();
+        int userIdx = postReport.getUserIdx();
+
+        int challenge = settingDao.checkChallenge(challengeIdx);
+        if(challenge == 0) throw new BaseException(NOT_EXIST_CHALLENGE);
+
+        int member = settingDao.checkMember(challengeIdx, userIdx);
+        if(member == 0) throw new BaseException(NOT_EXIST_MEMBER);
+
+        int certification = settingDao.checkCertification(postReport.getCertificationIdx());
+        if(certification == 0) throw new BaseException(NOT_EXIST_CERTIFICATION);
+
+        int report = settingDao.checkReport(postReport.getCertificationIdx(), userIdx);
+        if(report == 1) throw new BaseException(EXIST_REPORT);
+
+        try {
+            int result = settingDao.postReport(postReport);
+            return result;
+        } catch (Exception exception) {
+            throw new BaseException(FAILED_TO_REPORT);
         }
     }
 

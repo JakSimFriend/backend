@@ -1,5 +1,6 @@
 package com.example.demo.src.setting;
 
+import com.example.demo.src.setting.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -37,5 +38,36 @@ public class SettingDao {
         Object[] modifyAlertParams = new Object[]{userIdx};
 
         return this.jdbcTemplate.update(modifyAlertQuery, modifyAlertParams);
+    }
+
+    public int postReport(PostReport postReport) {
+        String postReportrQuery = "insert into Report(userIdx, challengeIdx, certificationIdx) values (?, ?, ?);\n";
+        Object[] postReportParams = new Object[]{postReport.getUserIdx(), postReport.getChallengeIdx(), postReport.getCertificationIdx()};
+        this.jdbcTemplate.update(postReportrQuery, postReportParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+    }
+
+    public int checkCertification(int certificationIdx) {
+        String checkQuery = "select exists(select certificationIdx from Certification where certificationIdx = ?);\n";
+        Object[] checkParams = new Object[]{certificationIdx};
+        return this.jdbcTemplate.queryForObject(checkQuery, int.class, checkParams);
+    }
+
+    public int checkMember(int challengeIdx, int userIdx) {
+        String checkMemberQuery = "select exists(select userIdx from Member m where m.status = 1 and challengeIdx = ? and userIdx = ?);\n";
+        return this.jdbcTemplate.queryForObject(checkMemberQuery, int.class, challengeIdx, userIdx);
+    }
+
+    public int checkChallenge(int challengeIdx) {
+        String checkChallengeQuery = "select exists(select challengeIdx from Challenge where challengeIdx = ? and status = 1)";
+        int checkChallengeParams = challengeIdx;
+        return this.jdbcTemplate.queryForObject(checkChallengeQuery, int.class, checkChallengeParams);
+    }
+
+    public int checkReport(int certificationIdx, int userIdx) {
+        String checkReportQuery = "select exists(select reportIdx from Report where certificationIdx = ? and userIdx = ?);\n";
+        return this.jdbcTemplate.queryForObject(checkReportQuery, int.class, certificationIdx, userIdx);
     }
 }

@@ -2,6 +2,7 @@ package com.example.demo.src.setting;
 
 import com.example.demo.src.setting.SettingProvider;
 import com.example.demo.src.setting.SettingService;
+import com.example.demo.src.setting.model.PostReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -75,6 +77,32 @@ public class SettingController {
 
             settingService.cancelAlert(userIdx);
             String result = "성공";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 신고하기 API
+     * [POST] /settings/report
+     * @return BaseResponse<Integer>
+     */
+    @ResponseBody
+    @PostMapping("/report")
+    public BaseResponse<Integer> postReport(@RequestBody PostReport postReport) {
+        try {
+            if(postReport.getUserIdx() == 0) return new BaseResponse<>(POST_REPORT_EMPTY_USER);
+            if(postReport.getChallengeIdx() == 0) return new BaseResponse<>(POST_REPORT_EMPTY_CHALLENGE);
+            if(postReport.getCertificationIdx() == 0) return new BaseResponse<>(POST_REPORT_EMPTY_CERTIFICATION);
+
+            int userIdx = postReport.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            int result = settingService.postReport(postReport);
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
