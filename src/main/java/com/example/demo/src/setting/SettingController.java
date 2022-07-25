@@ -1,7 +1,9 @@
 package com.example.demo.src.setting;
 
+import com.example.demo.src.profile.model.GetProfile;
 import com.example.demo.src.setting.SettingProvider;
 import com.example.demo.src.setting.SettingService;
+import com.example.demo.src.setting.model.GetNotice;
 import com.example.demo.src.setting.model.PostInquire;
 import com.example.demo.src.setting.model.PostReport;
 import org.slf4j.Logger;
@@ -134,6 +136,28 @@ public class SettingController {
             int result = settingService.postInquire(postInquire);
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 공지사항 조회 API
+     * [GET] /settings/notice/:userIdx
+     * @return BaseResponse<GetNotice>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/notice/{userIdx}")
+    public BaseResponse<List<GetNotice>> getNotice(@PathVariable("userIdx") int userIdx) {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetNotice> getNotice = settingProvider.getNotice();
+            return new BaseResponse<>(getNotice);
+        } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
     }

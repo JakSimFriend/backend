@@ -79,4 +79,19 @@ public class SettingDao {
         String lastInserIdQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
     }
+
+    public List<GetNotice> getNotice(){
+        String getNoticeQuery = "select noticeIdx,\n" +
+                "       title,\n" +
+                "       date_format(createAt, '%Y/%m/%d %H:%i') date\n" +
+                "from Notice order by createAt desc ;";
+
+        return this.jdbcTemplate.query(getNoticeQuery,
+                (rs, rowNum) -> new GetNotice(
+                        rs.getInt("noticeIdx"),
+                        rs.getString("title"),
+                        rs.getString("date")
+                ));
+    }
+
 }

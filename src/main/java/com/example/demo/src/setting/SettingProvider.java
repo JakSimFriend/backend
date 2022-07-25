@@ -3,6 +3,7 @@ package com.example.demo.src.setting;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.setting.SettingDao;
+import com.example.demo.src.setting.model.*;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.SHA256;
 import org.slf4j.Logger;
@@ -28,5 +29,15 @@ public class SettingProvider {
     public SettingProvider(SettingDao settingDao, JwtService jwtService) {
         this.settingDao = settingDao;
         this.jwtService = jwtService;
+    }
+
+    public List<GetNotice> getNotice() throws BaseException{
+        try{
+            List<GetNotice> getNotice = settingDao.getNotice();
+            return getNotice;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }
