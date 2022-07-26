@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetPoints {
+    private int idx;
     private String categoryName;
     private String image;
     private String createAt;

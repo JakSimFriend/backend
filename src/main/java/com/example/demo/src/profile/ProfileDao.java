@@ -50,15 +50,15 @@ public class ProfileDao {
                 "where u.userIdx = p.userIdx\n" +
                 "and u.status = 1\n" +
                 "and u.userIdx = ? ";
-        String getPointQuery = "select pc.categoryName categoryName,\n" +
-                "       pc.image image,\n" +
-                "       DATE_FORMAT(p.createAt, '%Y/%m/%d') as createAt,\n" +
-                "       p.point point,\n" +
-                "       sum(point) over(order by p.createAt, pointIdx) as balance\n" +
-                "from PointCategory pc, Point p\n" +
-                "where pc.categoryIdx = p.categoryIdx\n" +
-                "and p.userIdx = ?\n" +
-                "order by createAt desc; ";
+        String getPointQuery = "select @rownum:=@rownum + 1 as idx,\n" +
+                "       p.*\n" +
+                "from(\n" +
+                "    select pc.categoryName categoryName,\n" +
+                "           pc.image image,\n" +
+                "           DATE_FORMAT(p.createAt, '%Y/%m/%d') as createAt,\n" +
+                "           p.point point,\n" +
+                "           sum(point) over(order by p.createAt, pointIdx)  as balance\n" +
+                "    from Point p, PointCategory pc,(select @rownum:=0) r where pc.categoryIdx = p.categoryIdx and userIdx = ?) p order by idx desc ;";
         int getProfileParams = userIdx;
 
         return this.jdbcTemplate.query(getProfileQuery,
@@ -69,6 +69,7 @@ public class ProfileDao {
                         rs.getString("promise"),
                         rs.getInt("point"),
                         this.jdbcTemplate.query(getPointQuery, (rs1, rowNum1) -> new GetPoints(
+                                rs1.getInt("idx"),
                                 rs1.getString("categoryName"),
                                 rs1.getString("image"),
                                 rs1.getString("createAt"),

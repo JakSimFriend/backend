@@ -48,7 +48,10 @@ public class StatusDao {
     }
 
     public List<GetStatusDetail> getStatusDetail(int userIdx) {
-        String getStatusQuery = "select c.categoryIdx,\n" +
+        String getStatusQuery = "select @rownum:=@rownum + 1 as idx,\n" +
+                "       e.*\n" +
+                "from(\n" +
+                "    select c.categoryIdx,\n" +
                 "       ca.categoryName,\n" +
                 "       ca.categoryPhoto,\n" +
                 "       c.challengeIdx,\n" +
@@ -56,15 +59,16 @@ public class StatusDao {
                 "       date_format(date_add(startDate, interval 14 day ), '%Y/%m/%d 종료') endDate,\n" +
                 "       e.experience,\n" +
                 "       sum(experience) over(order by e.createAt, experienceIdx) as total\n" +
-                "from Category ca, Challenge c, ExperienceRate e\n" +
-                "where c.challengeIdx = e.challengeIdx\n" +
-                "and c.categoryIdx = ca.categoryIdx\n" +
-                "and e.userIdx = ?\n" +
-                "and e.status = 1\n" +
-                "order by e.createAt desc;";
+                "    from Category ca, Challenge c, ExperienceRate e, (select @rownum:=0) r\n" +
+                "    where c.challengeIdx = e.challengeIdx\n" +
+                "    and c.categoryIdx = ca.categoryIdx\n" +
+                "    and e.userIdx = ?\n" +
+                "    and e.status = 1\n" +
+                "    and c.status = 1) e order by idx desc ;";
 
         return this.jdbcTemplate.query(getStatusQuery,
                 (rs, rowNum) -> new GetStatusDetail(
+                        rs.getInt("idx"),
                         rs.getInt("categoryIdx"),
                         rs.getString("categoryName"),
                         rs.getString("categoryPhoto"),

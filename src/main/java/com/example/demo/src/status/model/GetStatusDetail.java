@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetStatusDetail {
+    private int idx;
     private int categoryIdx;
     private String categoryName;
     private String categoryPhoto;
