@@ -1,5 +1,8 @@
 package com.example.demo.src.user;
 
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import org.apache.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -91,6 +94,43 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * 애플 로그인 API
+     * [POST] /users/apple-signin
+     * @RequestBody postAppleSignInReq
+     * @return BaseResponse<PostUserSignInRes>
+     */
+    @ResponseBody
+    @PostMapping("/users/apple-signin")
+    public BaseResponse<PostLoginRes> postAppleSignIn(@RequestBody PostAppleSignInReq postAppleSignInReq) throws BaseException, ParseException, java.text.ParseException {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String idToken = request.getHeader("APPLE-ID-TOKEN");
+        String deviceToken = request.getHeader("DEVICE-TOKEN");
+        String email = postAppleSignInReq.getEmail();
+
+        if (deviceToken == null || deviceToken.length() == 0) {
+            return new BaseResponse<>(EMPTY_DEVICE_TOKEN);
+        }
+
+        if (idToken == null || idToken.length() == 0) {
+            return new BaseResponse<>(EMPTY_ID_TOKEN);
+        }
+
+        // idToken 디코딩하여 sub 뽑기
+        SignedJWT signedJWT = SignedJWT.parse(idToken);
+        ReadOnlyJWTClaimsSet payload = signedJWT.getJWTClaimsSet();
+        String socialId = "apple_"+payload.getSubject();
+
+        try {
+            PostLoginRes postLoginRes = userService.createAppleSignIn(email, deviceToken);
+            return new BaseResponse<>(postLoginRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
 
     /**
      * 닉네임 중복 확인 API

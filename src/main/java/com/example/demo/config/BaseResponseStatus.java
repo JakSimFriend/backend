@@ -23,6 +23,7 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
     EMPTY_ACCESS_TOKEN(false, 2004, "ACCESS TOKEN을 입력하세요."),
     EMPTY_DEVICE_TOKEN(false,2005,"DEVICE TOKEN을 입력하세요."),
+    EMPTY_ID_TOKEN(false, 2006, "ID TOKEN을 입력하세요."),
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
 
@@ -181,6 +182,8 @@ public enum BaseResponseStatus {
     FAILED_TO_NAVER_SIGN_IN(false, 5009, "네이버 로그인에 실패하였습니다."),
     EXIST_USER(false, 5010, "존재하는 회원입니다. 로그인을 시도하세요"),
     FORBIDDEN_USER(false, 5011, "해당 회원에 접근할 수 없습니다."),
+    FAILED_TO_APPLE_SIGN_UP(false, 5006, "애플 회원가입에 실패하였습니다."),
+
 
     ;
 

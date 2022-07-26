@@ -161,7 +161,7 @@ public class UserService {
         JSONObject jsonObject;
 
         String header = "Bearer " + accessToken; // Bearer 다음에 공백 추가
-        String apiURL = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken;
+        String apiURL = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
 
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Authorization", header);
@@ -244,6 +244,57 @@ public class UserService {
         }
     }
 
+    /**
+     * 애플 로그인 API (첫 로그인시 디비에 저장)
+     * @param email, deviceToken
+     * @return PostLoginRes
+     * @throws BaseException
+     */
+    public PostLoginRes createAppleSignUp(String email, String deviceToken) throws BaseException {
+        try {
+            int userIdx = userDao.postEmail(email);
+            int result = userDao.postDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(userIdx, jwt);
+        } catch (Exception exception) {
+            throw new BaseException(FAILED_TO_APPLE_SIGN_UP);
+        }
+    }
+
+
+    /**
+     * 애플 로그인 API
+     * @param email, deviceToken
+     * @return PostLoginRes
+     * @throws BaseException
+     */
+    public PostLoginRes createAppleSignIn(String email, String deviceToken) throws BaseException {
+        if (userDao.checkEmail(email) == 1) {
+            GetSocial getSocial = userDao.getIdx(email);
+            int userIdx = getSocial.getUserIdx();
+
+            int check = userDao.checkToken(userIdx);
+            if(check == 0) {
+                int result = userDao.postDeviceToken(userIdx, deviceToken);
+                if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+            }
+
+            int result = userDao.updateDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(userIdx, jwt);
+
+        } else {
+            int userIdx = userDao.postEmail(email);
+            int result = userDao.postDeviceToken(userIdx, deviceToken);
+            if(result == 0) throw new BaseException(SAVE_FAIL_DEVICE);
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(userIdx, jwt);
+        }
+
+    }
 
     public void checkNickName(PostUserNickName postUserNickName) throws BaseException {
         String nickName = postUserNickName.getNickName();
