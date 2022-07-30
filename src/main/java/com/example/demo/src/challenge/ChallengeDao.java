@@ -3,6 +3,7 @@ package com.example.demo.src.challenge;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.challenge.model.*;
+import com.example.demo.src.mychallenge.model.GetToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -333,7 +334,7 @@ public class ChallengeDao {
     }
 
     public String getTitle(int challengeIdx) {
-        String getTitleQuery = "select title from Challenge where challengeIdx = ? and status = 1;\n";
+        String getTitleQuery = "select title from Challenge where challengeIdx = ?;\n";
         return this.jdbcTemplate.queryForObject(getTitleQuery, (rs, rowNum) -> new String(rs.getString("title")), challengeIdx);
     }
 
@@ -351,5 +352,70 @@ public class ChallengeDao {
         String getUserQuery = "select userIdx from ChallengeWaiting where waitingIdx = ? and status = 1;\n";
         return this.jdbcTemplate.queryForObject(getUserQuery, (rs, rowNum) -> new Integer(rs.getInt("userIdx")), waitingIdx);
     }
+
+    public List<Integer> checkStart() {
+        String checkStartQuery = "select c.challengeIdx from Challenge c\n" +
+                "left join (select m.challengeIdx, count(memberIdx) as member\n" +
+                "from Member m\n" +
+                "where m.status = 1\n" +
+                "    group by challengeIdx) as x on x.challengeIdx = c.challengeIdx\n" +
+                "where c.status = 1\n" +
+                "and member > 3 and datediff(now(), startDate) = 0;";
+
+        return this.jdbcTemplate.query(checkStartQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("challengeIdx")));
+    }
+
+    public List<Integer> checkEnd() {
+        String checkEndQuery = "select c.challengeIdx from Challenge c\n" +
+                "left join (select m.challengeIdx, count(memberIdx) as member\n" +
+                "from Member m\n" +
+                "where m.status = 1\n" +
+                "    group by challengeIdx) as x on x.challengeIdx = c.challengeIdx\n" +
+                "where c.status = 1 and proceeding = 1\n" +
+                "and member > 3  and date_add(startDate, interval 14 day) <= curdate()";
+
+        return this.jdbcTemplate.query(checkEndQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("challengeIdx")));
+    }
+
+    public int startChallenge(int challengeIdx){
+        String startChallengeQuery = "update Challenge set proceeding = 1 where challengeIdx = ? and status = 1;";
+        System.out.println("dao: start");
+        return this.jdbcTemplate.update(startChallengeQuery, challengeIdx);
+    }
+
+    public int endChallenge(int challengeIdx){
+        String endChallengeQuery = "update Challenge set proceeding = 2 where challengeIdx = ? and status = 1;\n";
+        System.out.println("dao: end");
+        return this.jdbcTemplate.update(endChallengeQuery, challengeIdx);
+    }
+
+    public List<Integer> checkAbolition() {
+        String checkAbolitionQuery = "select c.challengeIdx from Challenge c\n" +
+                "left join (select m.challengeIdx, count(memberIdx) as member\n" +
+                "from Member m\n" +
+                "where m.status = 1\n" +
+                "    group by challengeIdx) as x on x.challengeIdx = c.challengeIdx\n" +
+                "where c.status = 1\n" +
+                "and member < 4 and datediff(now(), startDate) = 0;";
+        return this.jdbcTemplate.query(checkAbolitionQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("challengeIdx")));
+    }
+
+    public int abolitionChallenge(int challengeIdx){
+        String abolitionChallengeQuery = "update Challenge set status = 0 where challengeIdx = ? and status = 1;\n";
+        System.out.println("dao: abolition");
+        return this.jdbcTemplate.update(abolitionChallengeQuery, challengeIdx);
+    }
+
+    public List<Integer> getMember(int challengeIdx) {
+        String getMemberQuery = "select userIdx from Member where challengeIdx = ?;";
+        return this.jdbcTemplate.query(getMemberQuery,
+                (rs, rowNum) -> new Integer(rs.getInt("userIdx")), challengeIdx);
+    }
+
+
+
 
 }

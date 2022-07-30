@@ -9,6 +9,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.challenge.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -242,6 +243,24 @@ public class ChallengeController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
-
     }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    public void startChallenge(){
+        System.out.println("startChallenge");
+        challengeService.startChallenge();
+    }
+
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul")
+    public void endChallenge(){
+        System.out.println("endChallenge");
+        challengeService.endChallenge();
+    }
+
+    @Scheduled(cron = "0 30 0 * * *", zone = "Asia/Seoul")
+    public void abolitionChallenge(){
+        System.out.println("abolitionChallenge");
+        challengeService.abolitionChallenge();
+    }
+
 }

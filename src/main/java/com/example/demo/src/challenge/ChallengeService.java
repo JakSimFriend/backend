@@ -252,5 +252,54 @@ public class ChallengeService {
         return googleCredentials.getAccessToken().getTokenValue();
     }
 
+    public void startChallenge(){
+        String image = "https://jaksim-bucket.s3.ap-northeast-2.amazonaws.com/401afa49-dbd8-4841-af53-10c890f2ea05.png";
+
+        List<Integer> challengeList = challengeDao.checkStart();
+        if(challengeList.size() == 0){return;}
+
+        for (Integer challengeIdx : challengeList) {
+            challengeDao.startChallenge(challengeIdx);
+            String challengeTitle = challengeDao.getTitle(challengeIdx);
+            String body = challengeTitle + "가 시작되었어요!";
+
+            System.out.println(body);
+            List<Integer> memberList = challengeDao.getMember(challengeIdx);
+            for (Integer userIdx : memberList) {
+                challengeDao.createAlert(body, userIdx, image);
+            }
+        }
+
+    }
+
+    public void endChallenge(){
+        List<Integer> challengeList = challengeDao.checkEnd();
+        if(challengeList.size() == 0){return;}
+        for(int i = 0; i<challengeList.size(); i++){
+            challengeDao.endChallenge(challengeList.get(i));
+        }
+    }
+
+    public void abolitionChallenge(){
+        String image = "https://jaksim-bucket.s3.ap-northeast-2.amazonaws.com/401afa49-dbd8-4841-af53-10c890f2ea05.png";
+
+        List<Integer> challengeList = challengeDao.checkAbolition();
+        System.out.println(challengeList.size());
+
+        if(challengeList.size() == 0){return;}
+
+        for (Integer challengeIdx : challengeList) {
+            challengeDao.abolitionChallenge(challengeIdx);
+            String challengeTitle = challengeDao.getTitle(challengeIdx);
+            String body = "인원 미달로 " + challengeTitle + " 도전작심이 폐지되었어요.";
+            System.out.println(body);
+
+            List<Integer> memberList = challengeDao.getMember(challengeIdx);
+            for (Integer userIdx : memberList) {
+                challengeDao.createAlert(body, userIdx, image);
+            }
+        }
+    }
+
 
 }
