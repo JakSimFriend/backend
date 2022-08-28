@@ -48,17 +48,18 @@ public class UserController {
     public BaseResponse<PostLoginRes> postKakaoLogIn() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String accessToken = request.getHeader("KAKAO-ACCESS-TOKEN");
-        //String deviceToken = request.getHeader("DEVICE-TOKEN");
+        String deviceToken = request.getHeader("DEVICE-TOKEN");
 
         if (accessToken == null || accessToken.length() == 0) {
             return new BaseResponse<>(EMPTY_ACCESS_TOKEN);
         }
 
-//        if (deviceToken == null || deviceToken.length() == 0) {
-//            return new BaseResponse<>(EMPTY_DEVICE_TOKEN);
-//        }
+        if (deviceToken == null || deviceToken.length() == 0) {
+            return new BaseResponse<>(EMPTY_DEVICE_TOKEN);
+        }
+
         try {
-            PostLoginRes postLoginRes = userService.createKakaoSignIn(accessToken/*, deviceToken*/);
+            PostLoginRes postLoginRes = userService.createKakaoSignIn(accessToken, deviceToken);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -77,18 +78,18 @@ public class UserController {
     public BaseResponse<PostLoginRes> postGoogleLogIn() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String accessToken = request.getHeader("GOOGLE-ACCESS-TOKEN");
-       // String deviceToken = request.getHeader("DEVICE-TOKEN");
+        String deviceToken = request.getHeader("DEVICE-TOKEN");
 
         if (accessToken == null || accessToken.length() == 0) {
             return new BaseResponse<>(EMPTY_ACCESS_TOKEN);
         }
 
-//        if (deviceToken == null || deviceToken.length() == 0) {
-//            return new BaseResponse<>(EMPTY_DEVICE_TOKEN);
-//        }
+        if (deviceToken == null || deviceToken.length() == 0) {
+            return new BaseResponse<>(EMPTY_DEVICE_TOKEN);
+        }
 
         try {
-            PostLoginRes postLoginRes = userService.createGoogleSignIn(accessToken/*, deviceToken*/);
+            PostLoginRes postLoginRes = userService.createGoogleSignIn(accessToken, deviceToken);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
