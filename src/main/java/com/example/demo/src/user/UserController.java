@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.profile.model.GetProfile;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.apache.http.ParseException;
@@ -16,6 +17,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -35,6 +38,23 @@ public class UserController {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+    }
+
+    /**
+     * 유저 idx 조회 API
+     * [GET] /users/idx
+     * @return BaseResponse<Integer>
+     */
+    // Header
+    @ResponseBody
+    @GetMapping("/idx")
+    public BaseResponse<Integer> getIdx() {
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            return new BaseResponse<>(userIdxByJwt);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
     /**
