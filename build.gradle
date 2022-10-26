@@ -25,7 +25,6 @@ repositories {
 dependencies {
     implementation 'org.jetbrains:annotations:19.0.0'
 
-
     // Spring Boot Starter
     testImplementation ('org.springframework.boot:spring-boot-starter-test')
 
@@ -36,11 +35,11 @@ dependencies {
 
     // DB
     runtimeOnly ('mysql:mysql-connector-java') //mysql8
-    //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
     implementation ('org.springframework.boot:spring-boot-starter-jdbc')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
 
-
+    // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     // Web
     implementation ('org.springframework.boot:spring-boot-starter-web')
@@ -52,7 +51,6 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter')
     compile('org.springframework.boot:spring-boot-starter-web')
-
 
     //Social Login
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
@@ -80,8 +78,10 @@ dependencies {
     compile group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.4'
 
+    // swagger
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'}
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+}
 
 test {
     useJUnitPlatform()
