@@ -43,7 +43,7 @@ public class ChallengeService {
     private final ChallengeProvider challengeProvider;
     private final JwtService jwtService;
     private final ObjectMapper objectMapper;
-    private final String API_URL = "https://fcm.googleapis.com/v1/projects/jaksimfriend/messages:send";
+    private final String API_URL = "https://fcm.googleapis.com/v1/projects/jaksim-39727/messages:send";
 
     @Autowired
     public ChallengeService(ChallengeDao challengeDao, ChallengeProvider challengeProvider, JwtService jwtService, ObjectMapper objectMapper) {
@@ -102,7 +102,7 @@ public class ChallengeService {
             String sender = challengeDao.getNickName(postChallengeJoin.getUserIdx());
             int receiverIdx = challengeDao.getFounder(postChallengeJoin.getChallengeIdx());
             String receiver = challengeDao.getNickName(receiverIdx);
-            String token = challengeDao.getToken(16);
+            String token = challengeDao.getToken(receiverIdx);
             String challengeTitle = challengeDao.getTitle(postChallengeJoin.getChallengeIdx());
             System.out.println(token);
 
@@ -111,8 +111,6 @@ public class ChallengeService {
             String body = challengeTitle + " 도전작심에 참여 신청이 들어왔어요!";
 
             RequestDTO requestDTO = new RequestDTO(token, title, body, image);
-            System.out.println(requestDTO + "객체");
-            System.out.println(token + " " + title + " " + body + " " + image);
             sendMessageTo(requestDTO.getTargetToken(), requestDTO.getTitle(), requestDTO.getBody(), requestDTO.getImage());
 
             int alert = challengeDao.createAlert(body, receiverIdx, image);
@@ -242,7 +240,7 @@ public class ChallengeService {
     }
 
     private String getAccessToken() throws IOException {
-        String firebaseConfigPath = "jaksimfriend-firebase-adminsdk-pbdqf-076653fb04.json";
+        String firebaseConfigPath = "jaksim-39727-firebase-adminsdk-6230v-efb76e1f75.json";
 
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
