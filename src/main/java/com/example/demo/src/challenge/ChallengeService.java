@@ -148,17 +148,14 @@ public class ChallengeService {
         try{
             int userIdx = challengeDao.getUser(waitingIdx);
             int challengeIdx = challengeDao.getChallenge(waitingIdx);
-            String token = challengeDao.getToken(16);
+            String token = challengeDao.getToken(userIdx);
             String challengeTitle = challengeDao.getTitle(challengeIdx);
-            System.out.println(token);
 
             String title = "승인 여부 알림이 도착했어요!";
             String image = "https://jaksim-bucket.s3.ap-northeast-2.amazonaws.com/c6238aa8-6855-413d-b1ee-f3b0b8d8e50a.png";
             String body = challengeTitle + " 도전작심 참여 신청이 거절되었어요";
 
             RequestDTO requestDTO = new RequestDTO(token, title, body, image);
-            System.out.println(requestDTO + "객체");
-            System.out.println(token + " " + title + " " + body + " " + image);
             sendMessageTo(requestDTO.getTargetToken(), requestDTO.getTitle(), requestDTO.getBody(), requestDTO.getImage());
 
             int alert = challengeDao.createAlert(body, userIdx, image);
@@ -185,17 +182,14 @@ public class ChallengeService {
         try{
             int userIdx = challengeDao.getUser(waitingIdx);
             int challengeIdx = challengeDao.getChallenge(waitingIdx);
-            String token = challengeDao.getToken(16);
+            String token = challengeDao.getToken(userIdx);
             String challengeTitle = challengeDao.getTitle(challengeIdx);
-            System.out.println(token);
 
             String title = "승인 여부 알림이 도착했어요!";
             String image = "https://jaksim-bucket.s3.ap-northeast-2.amazonaws.com/c6238aa8-6855-413d-b1ee-f3b0b8d8e50a.png";
             String body = challengeTitle + " 도전작심 참여 신청이 승인되었어요!";
 
             RequestDTO requestDTO = new RequestDTO(token, title, body, image);
-            System.out.println(requestDTO + "객체");
-            System.out.println(token + " " + title + " " + body + " " + image);
             sendMessageTo(requestDTO.getTargetToken(), requestDTO.getTitle(), requestDTO.getBody(), requestDTO.getImage());
 
             int alert = challengeDao.createAlert(body, userIdx, image);
